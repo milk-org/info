@@ -158,7 +158,7 @@ int_fast8_t info_image_statsf_cli()
 void __attribute__ ((constructor)) libinit_info()
 {
 	init_info();
-	printf(" ...... Loading module %s\n", __FILE__);
+//	printf(" ...... Loading module %s\n", __FILE__);
 }
 
 
