@@ -158,23 +158,13 @@ int_fast8_t info_image_statsf_cli()
 void __attribute__ ((constructor)) libinit_info()
 {
 	init_info();
-
-	if(data.progStatus>0)
-	{
-		printf("  Found unloaded shared object in ./libs/ -> LOADING module %s\n", __FILE__);
-		fflush(stdout);
-	}	
+	RegisterModule(__FILE__, "milk", "Image information and statistics");
 }
 
 
 
 int init_info()
 {
-    strcpy(data.module[data.NBmodule].name, __FILE__);
-    strcpy(data.module[data.NBmodule].package, "milk");
-    strcpy(data.module[data.NBmodule].info, "Image information and statistics");
-    data.NBmodule++;
-
 
 /* =============================================================================================== */
 /*                                                                                                 */
