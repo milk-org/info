@@ -75,6 +75,10 @@ int clock_gettime(int clk_id, struct timespec *t){
 
 extern DATA data;
 
+static int INITSTATUS_info = 0;
+
+
+
 static int wcol, wrow; // window size
 
 static long long cntlast;
@@ -157,8 +161,12 @@ int_fast8_t info_image_statsf_cli()
 
 void __attribute__ ((constructor)) libinit_info()
 {
-	init_info();
-	RegisterModule(__FILE__, "milk", "Image information and statistics");
+	if ( INITSTATUS_info == 0 )
+	{
+		init_info();
+		RegisterModule(__FILE__, "milk", "Image information and statistics");
+		INITSTATUS_info = 1; 
+	}
 }
 
 
