@@ -1422,6 +1422,9 @@ int profile(const char *ID_name, const char *outfile, double xcenter, double yce
   FILE *fp;
   long i;
 
+	int *mask;
+	long IDmask; // if profmask exists
+
   ID = image_ID(ID_name);
   naxes[0] = data.image[ID].md[0].size[0];
   naxes[1] = data.image[ID].md[0].size[1];    
@@ -1430,6 +1433,23 @@ int profile(const char *ID_name, const char *outfile, double xcenter, double yce
   mean = (double*) malloc(nb_step*sizeof(double));
   rms = (double*) malloc(nb_step*sizeof(double));
   counts = (long*) malloc(nb_step*sizeof(long));
+  
+  mask = (int*) malloc(sizeof(int)*nelements);
+  
+	IDmask = image_ID("profmask");
+	if(IDmask != -1)
+	{
+		for(ii=0;ii<nelements;ii+)
+			{
+				if(data.image[IDmask].array.F[ii]>0.5)
+					mask[ii] = 1;
+				else
+					mask[ii] = 0;
+			}
+	}
+	else
+		for(ii=0;ii<nelements;ii+)
+			mask[ii] = 1;
   
   //  if( Debug )
   //printf("Function profile. center = %f %f, step = %f, NBstep = %ld\n",xcenter,ycenter,step,nb_step);
@@ -1449,14 +1469,16 @@ int profile(const char *ID_name, const char *outfile, double xcenter, double yce
     for (ii = 0; ii < naxes[0]; ii++){
       distance = sqrt((1.0*ii-xcenter)*(1.0*ii-xcenter)+(1.0*jj-ycenter)*(1.0*jj-ycenter));
       i = (long) (distance/step);
-      if(i<nb_step)
-	{
-	  dist[i] += distance;
-	  mean[i] += data.image[ID].array.F[jj*naxes[0]+ii];
-	  rms[i] += data.image[ID].array.F[jj*naxes[0]+ii]*data.image[ID].array.F[jj*naxes[0]+ii];
-	  counts[i] += 1;
-	}
+      if((i<nb_step)&&(mask[jj*naxes[0]+ii]==1))
+		{
+		dist[i] += distance;
+		mean[i] += data.image[ID].array.F[jj*naxes[0]+ii];
+		rms[i] += data.image[ID].array.F[jj*naxes[0]+ii]*data.image[ID].array.F[jj*naxes[0]+ii];
+		counts[i] += 1;
+		}
     }
+
+
 
   for (i=0;i<nb_step;i++)
     {
@@ -1469,14 +1491,13 @@ int profile(const char *ID_name, const char *outfile, double xcenter, double yce
     for (ii = 0; ii < naxes[0]; ii++){
       distance = sqrt((1.0*ii-xcenter)*(1.0*ii-xcenter)+(1.0*jj-ycenter)*(1.0*jj-ycenter));
       i = (long) distance/step;
-      if(i<nb_step)
+      if((i<nb_step)&&(mask[jj*naxes[0]+ii]==1))
 	{
 	  rms[i] += (data.image[ID].array.F[jj*naxes[0]+ii]-mean[i])*(data.image[ID].array.F[jj*naxes[0]+ii]-mean[i]);
 	  //	  counts[i] += 1;
 	}
     }
 
-  printf("--------- TEST ----------\n");
   
   for (i=0;i<nb_step;i++)
     {
@@ -1492,6 +1513,7 @@ int profile(const char *ID_name, const char *outfile, double xcenter, double yce
   
 
   fclose(fp);
+	free(mask);
 
   free(counts);
   free(dist);
