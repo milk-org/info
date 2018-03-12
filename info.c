@@ -1439,7 +1439,7 @@ int profile(const char *ID_name, const char *outfile, double xcenter, double yce
 	IDmask = image_ID("profmask");
 	if(IDmask != -1)
 	{
-		for(ii=0;ii<nelements;ii+)
+		for(ii=0;ii<nelements;ii++)
 			{
 				if(data.image[IDmask].array.F[ii]>0.5)
 					mask[ii] = 1;
@@ -1448,7 +1448,7 @@ int profile(const char *ID_name, const char *outfile, double xcenter, double yce
 			}
 	}
 	else
-		for(ii=0;ii<nelements;ii+)
+		for(ii=0;ii<nelements;ii++)
 			mask[ii] = 1;
   
   //  if( Debug )
