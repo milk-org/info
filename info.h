@@ -54,4 +54,6 @@ int full_structure_function(const char *ID_name, long NBpoints, const char *ID_o
 
 int fft_structure_function(const char *ID_in, const char *ID_out);
 
+long info_cubeMatchMatrix(const char* IDin_name, const char* IDout_name);
+
 #endif
