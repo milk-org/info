@@ -74,7 +74,7 @@ int clock_gettime(int clk_id, struct timespec *t){
 
 
 
-extern DATA data;
+//extern DATA data;
 
 static int INITSTATUS_info = 0;
 
