@@ -382,12 +382,6 @@ int printstatus(long ID)
     printw("%-28s\n", str);
 
 
-    /* printw("write  = %d\n", data.image[ID].md[0].write);
-    printw("status = %d\n", data.image[ID].md[0].status);
-    printw("cnt0   = %d\n", data.image[ID].md[0].cnt0);
-    printw("cnt1   = %d\n", data.image[ID].md[0].cnt1);
-    */
-
 
 
     clock_gettime(CLOCK_REALTIME, &tnow);
@@ -404,7 +398,6 @@ int printstatus(long ID)
     printw("[status %2d] ", data.image[ID].md[0].status);
     printw("[cnt0 %8d] [%6.2f Hz] ", data.image[ID].md[0].cnt0, frequ);
     printw("[cnt1 %8d]\n", data.image[ID].md[0].cnt1);
-   // printw("[logstatus %2d] ", data.image[ID].logstatus[0]);
  
     printw("[%ld sems ", data.image[ID].md[0].sem);
    for(s=0;s<data.image[ID].md[0].sem;s++)
@@ -418,95 +411,19 @@ int printstatus(long ID)
     sem_getvalue(data.image[ID].semlog, &semval);   
         printw(" [semlog % 3d] ", semval);
     
-    //TEST
-    /*
-    if(data.image[ID].md[0].shared == 1)
-        {
-            sem_getvalue(data.image[ID].semlog, &semval);
-            printw(" [semlog = %5d]", semval);
-        }*/
+
     printw("\n");
-/*    if(data.image[ID].md[0].sem==1)
-    {
-        sem_getvalue(data.image[ID].semptr1, &semval);
-        printw("[Semaphore 1 %3d] ", semval);
-    }
-    else
-    {
-        printw("[sem1=0]");
-    }
-    if(data.image[ID].semlog==1)
-    {
-        sem_getvalue(data.image[ID].semptrlog, &semval);
-        printw("[Semaphore log %3d] ", semval);
-    }
-    else
-    {
-        printw("[semlog=0]");
-    }
-*/
+
 
 
     average = arith_image_mean(data.image[ID].name);
     imtotal = arith_image_total(data.image[ID].name);
-    printw("median %12g   ", arith_image_median(data.image[ID].name));
+
+	if(atype==_DATATYPE_FLOAT)
+		printw("median %12g   ", arith_image_median(data.image[ID].name));
+
     printw("average %12g    total = %12g\n", imtotal/data.image[ID].md[0].nelement, imtotal);
 
-    // printw("  RMS var = %g\n", );
-
-
-    /*
-    tdifflast = time_diff(tlast, zylaconf[0].tend);
-    tdiffvlast = 1.0*tdifflast.tv_sec + 1.0e-9*tdifflast.tv_nsec;
-
-    tlast = zylaconf[0].tend;
-    freq = (zyladata[0].cnt - cntlast)/tdiffvlast;
-    cntlast = zyladata[0].cnt;
-    */
-
-    /*  printw("\n");
-    printw("Run time = %9.3f s\n", tdiffv);
-    printw("Monitor refresh every %6.2f ms  (%5.1f Hz)", 1000.0*tdiffvlast, 1.0/tdiffvlast);
-    printw("\n");
-    printw("Main program PID : %ld\n", (long) zylaconf[0].pid_main);
-    printw("CLI PID          : %ld\n", (long) zylaconf[0].pid_prompt);
-    printw("\n");
-
-    */
-
-    /*
-
-    switch (zylaconf[0].status) {
-    case 0:
-      attron(A_BLINK | A_BOLD | COLOR_PAIR(4));
-      print_header(" CAMERA IS OFF ", ' ');
-      attroff(A_BLINK | A_BOLD | COLOR_PAIR(4));
-      break;
-    case 1:
-      attron(A_BLINK | A_BOLD | COLOR_PAIR(4));
-      print_header(" SETTING UP ", ' ');
-      attroff(A_BLINK | A_BOLD | COLOR_PAIR(4));
-      break;
-    case 2:
-      attron(A_BLINK | A_BOLD | COLOR_PAIR(3));
-      print_header(" CAMERA IS ACQUIRING ", ' ');
-      attroff(A_BLINK | A_BOLD | COLOR_PAIR(3));
-      break;
-    case 3:
-      attron(A_BLINK | A_BOLD | COLOR_PAIR(3));
-      print_header(" PAUSED ", ' ');
-      attroff(A_BLINK | A_BOLD | COLOR_PAIR(3));
-      break;
-    }
-
-    printw("Exposure time    : %.2f ms\n", 1000.0*zylaconf[0].etime);
-    */
-    // printw("Frame %10ld   ", zyladata[0].cnt);
-
-    /*  attron(A_BOLD);
-    printw("%6.2f Hz\n", freq);
-    attroff(A_BOLD);
-    */
 
 
     vcnt = (long*) malloc(sizeof(long)*NBhistopt);
@@ -652,7 +569,10 @@ int info_pixelstats_smallImage(long ID, long NBpix)
 
 
 
-int info_image_monitor(const char *ID_name, double frequ)
+int info_image_monitor(
+		const char *ID_name, 
+		double frequ
+		)
 {
     long ID;
     long mode = 0; // 0 for large image, 1 for small image
@@ -1008,7 +928,10 @@ double rms_dev(const char *ID_name)
 
 
 // option "fileout" : output to file imstat.info.txt
-int info_image_stats(const char *ID_name, const char *options)
+int info_image_stats(
+		const char *ID_name, 
+		const char *options
+		)
 {
     int ID;
     long ii,jj,j;
@@ -1119,12 +1042,13 @@ int info_image_stats(const char *ID_name, const char *options)
 
 
 
-        printf("type:            %s\n",type);
-        printf("Memory size:     %ld Kb\n",(long) tmp_long/1024);
+        printf("type:            %s\n", type);
+        printf("Memory size:     %ld Kb\n", (long) tmp_long/1024);
         //      printf("Created:         %f\n", data.image[ID].creation_time);
         //      printf("Last access:     %f\n", data.image[ID].last_access);
 
-
+	if(atype == _DATATYPE_FLOAT)
+	{
 
         min = data.image[ID].array.F[0];
         max = data.image[ID].array.F[0];
@@ -1278,6 +1202,8 @@ int info_image_stats(const char *ID_name, const char *options)
         printf("\n");
         free(array);
     }
+	}
+
 
     if(mode == 1)
         fclose(fp);
