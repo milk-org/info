@@ -415,10 +415,10 @@ int printstatus(long ID)
     printw("\n");
 
 
-
+/*
     average = arith_image_mean(data.image[ID].name);
     imtotal = arith_image_total(data.image[ID].name);
-/*
+
 	if(atype==_DATATYPE_FLOAT)
 		printw("median %12g   ", arith_image_median(data.image[ID].name));
 
@@ -561,9 +561,9 @@ int printstatus(long ID)
         }
 
     }
-*/
-    free(vcnt);
 
+    free(vcnt);
+*/
 
     return(0);
 }
