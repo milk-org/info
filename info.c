@@ -368,7 +368,7 @@ int printstatus(long ID)
 
     if(atype==_DATATYPE_COMPLEX_DOUBLE)
         printw("type:  COMPLEX_DOUBLE     ");
-
+/*
     sprintf(str, "[ %6ld", (long) data.image[ID].md[0].size[0]);
 
     for(j=1; j<data.image[ID].md[0].naxis; j++)
@@ -415,7 +415,7 @@ int printstatus(long ID)
     printw("\n");
 
 
-/*
+
     average = arith_image_mean(data.image[ID].name);
     imtotal = arith_image_total(data.image[ID].name);
 
