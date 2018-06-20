@@ -472,6 +472,27 @@ int printstatus(long ID)
                 vcnt[h]++;
         }
     }
+    
+    if(atype==_DATATYPE_INT16)
+    {
+        minPV = data.image[ID].array.SI16[0];
+        maxPV = minPV;
+
+        for(h=0; h<NBhistopt; h++)
+            vcnt[h] = 0;
+        for(ii=0; ii<data.image[ID].md[0].nelement; ii++)
+        {
+            if(data.image[ID].array.SI16[ii]<minPV)
+                minPV = data.image[ID].array.SI16[ii];
+            if(data.image[ID].array.SI16[ii]>maxPV)
+                maxPV = data.image[ID].array.SI16[ii];
+            tmp = (1.0*data.image[ID].array.SI16[ii]-average);
+            RMS += tmp*tmp;
+            h = (long) (1.0*NBhistopt*((float) (data.image[ID].array.SI16[ii]-minPV))/(maxPV-minPV));
+            if((h>-1)&&(h<NBhistopt))
+                vcnt[h]++;
+        }
+    }
 
 
 
@@ -530,6 +551,14 @@ int printstatus(long ID)
                 printw("%3ld  %5u\n", ii, data.image[ID].array.UI16[ii]);
             }
         }
+        
+        if(data.image[ID].md[0].atype == _DATATYPE_INT16)
+        {
+            for(ii=0; ii<data.image[ID].md[0].nelement; ii++)
+            {
+                printw("%3ld  %5d\n", ii, data.image[ID].array.SI16[ii]);
+            }
+        }
 
     }
 
@@ -538,6 +567,8 @@ int printstatus(long ID)
 
     return(0);
 }
+
+
 
 
 
