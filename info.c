@@ -392,7 +392,7 @@ int printstatus(long ID)
     frequ = (data.image[ID].md[0].cnt0-cntlast)/tdiffv;
     cntlast = data.image[ID].md[0].cnt0;
 
-/*
+
 
     printw("[write %d] ", data.image[ID].md[0].write);
     printw("[status %2d] ", data.image[ID].md[0].status);
@@ -563,7 +563,7 @@ int printstatus(long ID)
     }
 
     free(vcnt);
-*/
+
 
     return(0);
 }
