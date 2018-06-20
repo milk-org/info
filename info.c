@@ -368,7 +368,7 @@ int printstatus(long ID)
 
     if(atype==_DATATYPE_COMPLEX_DOUBLE)
         printw("type:  COMPLEX_DOUBLE     ");
-/*
+
     sprintf(str, "[ %6ld", (long) data.image[ID].md[0].size[0]);
 
     for(j=1; j<data.image[ID].md[0].naxis; j++)
@@ -392,7 +392,7 @@ int printstatus(long ID)
     frequ = (data.image[ID].md[0].cnt0-cntlast)/tdiffv;
     cntlast = data.image[ID].md[0].cnt0;
 
-
+/*
 
     printw("[write %d] ", data.image[ID].md[0].write);
     printw("[status %2d] ", data.image[ID].md[0].status);
