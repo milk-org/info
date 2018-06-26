@@ -613,13 +613,69 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 	
 	double *tdiffvarray;
 
+	long perccnt;
+	long NBperccnt;
+	long perccntMAX = 1000;
+	
+	float percarray[perccntMAX];
+	long percNarray[perccntMAX];
+
 
 	tdiffvarray = (double*) malloc(sizeof(double)*NBsamples);
 	
+	perccnt = 0;
+
+	float p;
+	float pval;
+	long N;
+	
+	for(N=1;N<5;N++)
+	{
+		if(N < NBsamples)
+		{
+			percNarray[perccnt] = N;
+			percarray[perccnt] = 1.0*N/NBsamples;			
+			perccnt++;
+		}
+	}
+	
+
+	for(p=0.0001;p<0.1;p*=10.0)
+		{
+			N = (long) (p*NBsamples);
+			if((N>percNarray[perccnt])&&(perccnt<perccntMAX-1))
+			{
+				percNarray[perccnt] = N;
+				percarray[perccnt] = 1.0*N/NBsamples;
+				perccnt++;
+			}
+		}
+
+	for(p=0.1;p<0.9;p+=0.1)
+		{
+			N = (long) (p*NBsamples);
+			if((N>percNarray[perccnt])&&(perccnt<perccntMAX-1))
+			{
+				percNarray[perccnt] = N;
+				percarray[perccnt] = 1.0*N/NBsamples;
+				perccnt++;
+			}
+		}
+	
+	for(p=0.9; p<0.999; p = p + 0.5*(1.0-p))
+	{
+		N = (long) (p*NBsamples);
+			if((N>percNarray[perccnt])&&(perccnt<perccntMAX-1))
+			{
+				percNarray[perccnt] = N;
+				percarray[perccnt] = 1.0*N/NBsamples;
+				perccnt++;
+			}
+	}
+	
+	
     ID = image_ID(ID_name);
 
-    for(;;)
-    {
 		// warmup
 		for(cnt=0; cnt<SEMAPHORE_MAXVAL; cnt++)
 			sem_wait(data.image[ID].semptr[sem]);
@@ -642,12 +698,28 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
         // process timing data
         quick_sort_double(tdiffvarray, cnt);
         
+        printw("\n NBsamples = %ld\n\n", NBsamples);
         
+        float perc;
         
-        
-        
-    }
+        for(perccnt=0; perccnt<NBperccnt; perccnt++)
+        {
+//			long cntlim;
+//			float perc;
+			
+//			perc = percarray[perccnt];
+//			percN = percNarray[perccnt];
 
+			printw("%5.2f   [%10ld]    %10.3 us\n", 
+				percarray[perccnt], 
+				percNarray[perccnt], 
+				1.0e6*tdiffvarray[percNarray[perccnt]]);
+		}
+    
+    free(percarray);    
+    free(tdiffvarray);
+        
+       
     return 0;
 }
 
@@ -710,6 +782,8 @@ int info_image_monitor(
         init_pair(3, COLOR_GREEN, COLOR_BLACK);
         init_pair(4, COLOR_RED, COLOR_BLACK);
 		
+		long NBtsamples = 1000;
+		
 		int loopOK = 1;
         while( loopOK == 1 )
         {
@@ -752,6 +826,11 @@ int info_image_monitor(
 			
 			if(MonMode == 0)
 				printstatus(ID);
+				
+			if(MonMode == 1)
+			{
+				info_image_streamtiming_stats(ID_name, sem, NBtsamples);
+			}
 		
 
             refresh();
