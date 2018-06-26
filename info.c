@@ -792,7 +792,6 @@ int info_image_monitor(
         {
 			usleep((long) (1000000.0/frequ));
 			char ch = getch();
-			clear();
 
 
             attron(A_BOLD);
