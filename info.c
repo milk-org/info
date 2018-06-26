@@ -607,16 +607,25 @@ int info_pixelstats_smallImage(long ID, long NBpix)
 int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, float *percarray, long *percNarray, long NBperccnt, long percMedianIndex, long cntdiff)
 {
     long perccnt;
+	float RMSval = 0.0;
+	float AVEval = 0.0;
 
     // process timing data
     quick_sort_double(tdiffvarray, NBsamples);
-
+	
+	for(i=0; i<NBsamples; i++)
+	{
+		AVEval += tdiffvarray[i];
+		RMSval +=  tdiffvarray[i]*tdiffvarray[i];
+	}
+	RMSval = sqrt((RMSval - AVEval*AVEval)/NBsamples);
+	AVEval /= NBsamples;
+	
     printw("\n NBsamples = %ld  (cntdiff = %ld)     NBperccnt = %ld\n\n", NBsamples, cntdiff, NBperccnt);
 
 
 
     float perc;
-
     for(perccnt=0; perccnt<NBperccnt; perccnt++)
     {
         if(perccnt==percMedianIndex)
@@ -648,6 +657,9 @@ int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, floa
         }
     }
     attroff(A_BOLD|COLOR_PAIR(4));
+
+	printw("\n  Average Time Interval = %10.3f us\n", AVEval);
+	printw("                    RMS = %10.3f us  ( %5.3f \%)\n", RMSval, 100.0*RMSval/AVEval);
 
     return 0;
 }
