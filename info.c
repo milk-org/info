@@ -708,7 +708,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples, 
 
     if(part == 0)
     {
-		printw("ALLOCATE arrays\n");
+		//printw("ALLOCATE arrays\n");
         percarray = (float*) malloc(sizeof(float)*perccntMAX);
         percNarray = (long*) malloc(sizeof(long)*perccntMAX);
         tdiffvarray = (double*) malloc(sizeof(double)*NBsamples);
@@ -839,7 +839,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples, 
 
 	if(part == NBpart-1)
 	{
-		printw("FREE arrays\n");
+		//printw("FREE arrays\n");
 		free(percarray);
 		free(percNarray);
 		free(tdiffvarray);
@@ -999,7 +999,7 @@ int info_image_monitor(
 
                 if(MonMode == 1)
                 {
-                   // clear();
+                    clear();
                     
                     if(part>NBpart-1)
 						part = 0;
