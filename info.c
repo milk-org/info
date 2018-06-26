@@ -622,8 +622,9 @@ int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, floa
         if(perccnt==percMedianIndex)
         {
             attron(A_BOLD);
-            printw("%6.3f   [%10ld] [%10ld]    %10.3f us\n",
+            printw("%6.3f  %6.3f  [%10ld] [%10ld]    %10.3f us\n",
                    100.0*percarray[perccnt],
+                   100.0*(1.0-percarray[perccnt]),
                    percNarray[perccnt],
                    NBsamples - percNarray[perccnt],
                    1.0e6*tdiffvarray[percNarray[perccnt]]);
