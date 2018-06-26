@@ -612,7 +612,8 @@ int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, floa
 
     // process timing data
     quick_sort_double(tdiffvarray, NBsamples);
-	
+
+	long i;
 	for(i=0; i<NBsamples; i++)
 	{
 		AVEval += tdiffvarray[i];
