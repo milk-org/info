@@ -635,6 +635,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 		{
 			percNarray[perccnt] = N;
 			percarray[perccnt] = 1.0*N/NBsamples;			
+			printw("   0    NBsamples = %ld       NBperccnt = %ld\n", NBsamples, NBperccnt);
 			perccnt++;
 		}
 	}
@@ -647,6 +648,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 			{
 				percNarray[perccnt] = N;
 				percarray[perccnt] = 1.0*N/NBsamples;
+				printw("   1    NBsamples = %ld       NBperccnt = %ld\n", NBsamples, NBperccnt);
 				perccnt++;
 			}
 		}
@@ -658,6 +660,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 			{
 				percNarray[perccnt] = N;
 				percarray[perccnt] = 1.0*N/NBsamples;
+				printw("   2    NBsamples = %ld       NBperccnt = %ld\n", NBsamples, NBperccnt);
 				perccnt++;
 			}
 		}
@@ -669,6 +672,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 			{
 				percNarray[perccnt] = N;
 				percarray[perccnt] = 1.0*N/NBsamples;
+				printw("   3    NBsamples = %ld       NBperccnt = %ld\n", NBsamples, NBperccnt);
 				perccnt++;
 			}
 	}
@@ -701,7 +705,9 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
         // process timing data
         quick_sort_double(tdiffvarray, cnt);
       */  
-        printw("\n NBsamples = %ld       NBperccnt = %ld\n\n", NBsamples, NBperccnt);
+   //printw("\n NBsamples = %ld       NBperccnt = %ld\n\n", NBsamples, NBperccnt);
+   sleep(1.0);
+   
         /*
         float perc;
         
