@@ -755,7 +755,6 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 				perccnt++;
 			}
 	}
-	NBperccnt = perccnt;
 	
 	long N1;
 	for(N1=0;N1<5;N1++)
@@ -769,7 +768,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 			perccnt++;
 		}
 	}
-	
+	NBperccnt = perccnt;
 	
 	
 	
