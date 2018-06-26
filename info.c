@@ -642,7 +642,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 
 	for(p=0.0001;p<0.1;p*=10.0)
 		{
-			N = (long) (p*NBsamples);
+			N = (long) (p * NBsamples);
 			if((N>percNarray[perccnt])&&(perccnt<perccntMAX-1))
 			{
 				percNarray[perccnt] = N;
@@ -674,6 +674,9 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 	}
 	NBperccnt = perccnt;
 	
+	
+	
+	/*
     ID = image_ID(ID_name);
 
 		// warmup
@@ -697,29 +700,21 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
         
         // process timing data
         quick_sort_double(tdiffvarray, cnt);
-        
+      */  
         printw("\n NBsamples = %ld       NBperccnt = %ld\n\n", NBsamples, NBperccnt);
-        
+        /*
         float perc;
         
         for(perccnt=0; perccnt<NBperccnt; perccnt++)
         {
-//			long cntlim;
-//			float perc;
-			
-//			perc = percarray[perccnt];
-//			percN = percNarray[perccnt];
-
 			printw("%5.2f   [%10ld]    %10.3 us\n", 
 				percarray[perccnt], 
 				percNarray[perccnt], 
 				1.0e6*tdiffvarray[percNarray[perccnt]]);
 		}
-    
-        
+    */
     free(tdiffvarray);
-        
-       
+   
     return 0;
 }
 
