@@ -996,7 +996,7 @@ int info_image_monitor(
 
                 if(MonMode == 1)
                 {
-                    clear();
+                   // clear();
                     
                     if(part>NBpart-1)
 						part = 0;
