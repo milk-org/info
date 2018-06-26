@@ -647,12 +647,13 @@ int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, floa
             if(tdiffvarray[percNarray[perccnt]] > 1.99 * tdiffvarray[percNarray[percMedianIndex]])
                 attron(A_BOLD|COLOR_PAIR(6));
 
-            printw("%6.3f  %6.3f  [%10ld] [%10ld]    %10.3f us\n",
+            printw("%6.3f  %6.3f  [%10ld] [%10ld]    %10.3f us   %+10.3f us\n",
                    100.0*percarray[perccnt],
                    100.0*(1.0-percarray[perccnt]),
                    percNarray[perccnt],
                    NBsamples - percNarray[perccnt],
-                   1.0e6*tdiffvarray[percNarray[perccnt]]);
+                   1.0e6*tdiffvarray[percNarray[perccnt]], 
+                   1.0e6*(tdiffvarray[percNarray[perccnt]]-tdiffvarray[percNarray[percMedianIndex]));
         }
     }
     attroff(A_BOLD|COLOR_PAIR(4));
@@ -821,7 +822,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
         t0.tv_sec  = t1.tv_sec;
         t0.tv_nsec = t1.tv_nsec;
     }
-    long cntdiff = data.image[ID].md[0].cnt0 - cnt0 -1;
+    long cntdiff = data.image[ID].md[0].cnt0 - cnt0 - 1;
     
     info_image_streamtiming_stats_disp(tdiffvarray, NBsamples, percarray, percNarray, NBperccnt, percMedianIndex, cntdiff);
     
