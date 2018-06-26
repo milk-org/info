@@ -631,8 +631,12 @@ int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, floa
         }
         else
         {
-            if(tdiffvarray[percNarray[perccnt]] > 1.2 * tdiffvarray[percNarray[percMedianIndex]])
-                attron(A_BOLD|COLOR_PAIR(4));
+			if(tdiffvarray[percNarray[perccnt]] > 1.2 * tdiffvarray[percNarray[percMedianIndex]])
+				attron(A_BOLD|COLOR_PAIR(4));
+            if(tdiffvarray[percNarray[perccnt]] > 1.5 * tdiffvarray[percNarray[percMedianIndex]])
+                attron(A_BOLD|COLOR_PAIR(5));
+            if(tdiffvarray[percNarray[perccnt]] > 1.99 * tdiffvarray[percNarray[percMedianIndex]])
+                attron(A_BOLD|COLOR_PAIR(6));
 
             printw("%6.3f   [%10ld] [%10ld]    %10.3f us\n",
                    100.0*percarray[perccnt],
@@ -790,16 +794,20 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 		
 	// collect timing data
 	long cnt0 = data.image[ID].md[0].cnt0;
+
+	sem_wait(data.image[ID].semptr[sem]);
+	clock_gettime(CLOCK_REALTIME, &t0);
+	
     for(cnt=0; cnt<NBsamples; cnt++)
-        {			
-            sem_wait(data.image[ID].semptr[sem]);
-            clock_gettime(CLOCK_REALTIME, &t1);
-            tdiff = info_time_diff(t0, t1);
-            tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;            
-            tdiffvarray[cnt] = tdiffv;
-            t0.tv_sec  = t1.tv_sec;
-            t0.tv_nsec = t1.tv_nsec;            
-        }
+    {			
+        sem_wait(data.image[ID].semptr[sem]);
+        clock_gettime(CLOCK_REALTIME, &t1);
+        tdiff = info_time_diff(t0, t1);
+        tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;            
+        tdiffvarray[cnt] = tdiffv;
+        t0.tv_sec  = t1.tv_sec;
+        t0.tv_nsec = t1.tv_nsec;
+    }
     long cntdiff = data.image[ID].md[0].cnt0 - cnt0;
     
     info_image_streamtiming_stats_disp(tdiffvarray, NBsamples, percarray, percNarray, NBperccnt, percMedianIndex, cntdiff);
@@ -872,8 +880,10 @@ int info_image_monitor(
         init_pair(1, COLOR_BLACK, COLOR_WHITE);
         init_pair(2, COLOR_BLACK, COLOR_RED);
         init_pair(3, COLOR_GREEN, COLOR_BLACK);
-        init_pair(4, COLOR_RED, COLOR_BLACK);
-
+        init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+        init_pair(5, COLOR_RED, COLOR_BLACK);
+        init_pair(6, COLOR_BLACK, COLOR_RED);
+                
         long NBtsamples = 1024;
 
         cnt = 0;
