@@ -611,6 +611,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
     struct timespec tdiff;
     double tdiffv;
 	
+	
 	double *tdiffvarray;
 
 	long perccnt;
@@ -699,6 +700,20 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 			}
 	}
 	NBperccnt = perccnt;
+	
+	long N1;
+	for(N1=5;N1>0;N1++)
+	{
+		N = NBsamples - N1;
+		if(N>0)
+		{
+			percNarray[perccnt] = N;
+			percarray[perccnt] = 1.0*N/NBsamples;						
+			//printw("   0  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
+			perccnt++;
+		}
+	}
+	
 	
 	
 	
@@ -872,6 +887,16 @@ int info_image_monitor(
             case '2':
                 MonMode = 1; // Sem timing
                 sem = 2;
+                break;
+                
+            case '+':
+                if(MonMode == 1)
+					NBtsamples *= 2;				
+                break;
+                
+            case '-':
+                if(MonMode == 1)
+					NBtsamples /= 2;				
                 break;
             }
 
