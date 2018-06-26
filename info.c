@@ -630,7 +630,7 @@ int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, floa
         if(perccnt==percMedianIndex)
         {
             attron(A_BOLD);
-            printw("%6.3f  %6.3f  [%10ld] [%10ld]    %10.3f us\n",
+            printw("%6.3f \%  %6.3f \%  [%10ld] [%10ld]    %10.3f us\n",
                    100.0*percarray[perccnt],
                    100.0*(1.0-percarray[perccnt]),
                    percNarray[perccnt],
@@ -647,7 +647,7 @@ int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, floa
             if(tdiffvarray[percNarray[perccnt]] > 1.99 * tdiffvarray[percNarray[percMedianIndex]])
                 attron(A_BOLD|COLOR_PAIR(6));
 
-            printw("%6.3f  %6.3f  [%10ld] [%10ld]    %10.3f us   %+10.3f us\n",
+            printw("%6.3f \%  %6.3f \%  [%10ld] [%10ld]    %10.3f us   %+10.3f us\n",
                    100.0*percarray[perccnt],
                    100.0*(1.0-percarray[perccnt]),
                    percNarray[perccnt],
@@ -673,7 +673,7 @@ int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, floa
 //
 // nbiter = -1 for infinite
 //
-int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
+int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples, long part, long NBpart)
 {
     long ID;
     long cnt;
@@ -681,150 +681,155 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
     struct timespec t1;
     struct timespec tdiff;
     double tdiffv;
-	
-	
-	double *tdiffvarray;
-
-	long perccnt;
-	long NBperccnt;
-	long perccntMAX = 1000;
-	
-	float *percarray;
-	long *percNarray;
 
 
+    static double *tdiffvarray;
 
-	percarray = (float*) malloc(sizeof(float)*perccntMAX);
-	percNarray = (long*) malloc(sizeof(long)*perccntMAX);
-	tdiffvarray = (double*) malloc(sizeof(double)*NBsamples);
+    static long perccnt;
+    static long NBperccnt;
+    static long perccntMAX = 1000;
+	static int percMedianIndex;
 	
-	perccnt = 0;
+    static float *percarray;
+    static long *percNarray;
 
-	float p;
-	float pval;
-	long N;
-	int percMedianIndex;
-	
-	
-	for(N=1;N<5;N++)
-	{
-		if(N < NBsamples)
-		{
-			percNarray[perccnt] = N;
-			percarray[perccnt] = 1.0*N/NBsamples;						
-			perccnt++;
-		}
-	}
-	
 
-	for(p=0.0001;p<0.1;p*=10.0)
-		{
-			N = (long) (p * NBsamples);
-			if((N>percNarray[perccnt-1])&&(perccnt<perccntMAX-1))
-			{
-				percNarray[perccnt] = N;
-				percarray[perccnt] = 1.0*N/NBsamples;
-				perccnt++;
-			}
-		}
+    if(part == 0)
+    {
+        percarray = (float*) malloc(sizeof(float)*perccntMAX);
+        percNarray = (long*) malloc(sizeof(long)*perccntMAX);
+        tdiffvarray = (double*) malloc(sizeof(double)*NBsamples);
 
-	for(p=0.1;p<0.41;p+=0.1)
-		{
-			N = (long) (p*NBsamples);
-			if((N>percNarray[perccnt-1])&&(perccnt<perccntMAX-1))
-			{
-				percNarray[perccnt] = N;
-				percarray[perccnt] = 1.0*N/NBsamples;
-				perccnt++;
-			}
-		}
-	
-	p = 0.5;
-	N = (long) (p*NBsamples);
-	percNarray[perccnt] = N;
-	percarray[perccnt] = 1.0*N/NBsamples;
-	percMedianIndex = perccnt;
-	perccnt++;
-	
-	for(p=0.6;p<0.91;p+=0.1)
-		{
-			N = (long) (p*NBsamples);
-			if((N>percNarray[perccnt-1])&&(perccnt<perccntMAX-1))
-			{
-				percNarray[perccnt] = N;
-				percarray[perccnt] = 1.0*N/NBsamples;
-				perccnt++;
-			}
-		}
-	
-	
-	for(p=0.9; p<0.999; p = p + 0.5*(1.0-p))
-	{
-		N = (long) (p*NBsamples);
-			if((N>percNarray[perccnt-1])&&(perccnt<perccntMAX-1))
-			{
-				percNarray[perccnt] = N;
-				percarray[perccnt] = 1.0*N/NBsamples;
-				perccnt++;
-			}
-	}
-	
-	long N1;
-	for(N1=5;N1>0;N1--)
-	{
-		N = NBsamples - N1;
-		if((N>percNarray[perccnt-1])&&(perccnt<perccntMAX-1)&&(N>0))
-		{
-			percNarray[perccnt] = N;
-			percarray[perccnt] = 1.0*N/NBsamples;						
-			perccnt++;
-		}
-	}
-	NBperccnt = perccnt;
-	
-	
-	
-	int RT_priority = 80; //any number from 0-99
-    struct sched_param schedpar;
-    
-    schedpar.sched_priority = RT_priority;
+
+        perccnt = 0;
+
+        float p;
+        float pval;
+        long N;
+
+        for(N=1; N<5; N++)
+        {
+            if(N < NBsamples)
+            {
+                percNarray[perccnt] = N;
+                percarray[perccnt] = 1.0*N/NBsamples;
+                perccnt++;
+            }
+        }
+
+
+        for(p=0.0001; p<0.1; p*=10.0)
+        {
+            N = (long) (p * NBsamples);
+            if((N>percNarray[perccnt-1])&&(perccnt<perccntMAX-1))
+            {
+                percNarray[perccnt] = N;
+                percarray[perccnt] = 1.0*N/NBsamples;
+                perccnt++;
+            }
+        }
+
+        for(p=0.1; p<0.41; p+=0.1)
+        {
+            N = (long) (p*NBsamples);
+            if((N>percNarray[perccnt-1])&&(perccnt<perccntMAX-1))
+            {
+                percNarray[perccnt] = N;
+                percarray[perccnt] = 1.0*N/NBsamples;
+                perccnt++;
+            }
+        }
+
+        p = 0.5;
+        N = (long) (p*NBsamples);
+        percNarray[perccnt] = N;
+        percarray[perccnt] = 1.0*N/NBsamples;
+        percMedianIndex = perccnt;
+        perccnt++;
+
+        for(p=0.6; p<0.91; p+=0.1)
+        {
+            N = (long) (p*NBsamples);
+            if((N>percNarray[perccnt-1])&&(perccnt<perccntMAX-1))
+            {
+                percNarray[perccnt] = N;
+                percarray[perccnt] = 1.0*N/NBsamples;
+                perccnt++;
+            }
+        }
+
+
+        for(p=0.9; p<0.999; p = p + 0.5*(1.0-p))
+        {
+            N = (long) (p*NBsamples);
+            if((N>percNarray[perccnt-1])&&(perccnt<perccntMAX-1))
+            {
+                percNarray[perccnt] = N;
+                percarray[perccnt] = 1.0*N/NBsamples;
+                perccnt++;
+            }
+        }
+
+        long N1;
+        for(N1=5; N1>0; N1--)
+        {
+            N = NBsamples - N1;
+            if((N>percNarray[perccnt-1])&&(perccnt<perccntMAX-1)&&(N>0))
+            {
+                percNarray[perccnt] = N;
+                percarray[perccnt] = 1.0*N/NBsamples;
+                perccnt++;
+            }
+        }
+        NBperccnt = perccnt;
+
+
+
+        int RT_priority = 80; //any number from 0-99
+        struct sched_param schedpar;
+
+        schedpar.sched_priority = RT_priority;
 #ifndef __MACH__
-    sched_setscheduler(0, SCHED_FIFO, &schedpar);
+        sched_setscheduler(0, SCHED_FIFO, &schedpar);
 #endif
 
-    
-    
-    ID = image_ID(ID_name);
 
-	// warmup
-	for(cnt=0; cnt<SEMAPHORE_MAXVAL; cnt++)
-		sem_wait(data.image[ID].semptr[sem]);
-		
-	// collect timing data
-	long cnt0 = data.image[ID].md[0].cnt0;
 
-	sem_wait(data.image[ID].semptr[sem]);
-	clock_gettime(CLOCK_REALTIME, &t0);
-	
+        ID = image_ID(ID_name);
+    } // end of part=0 case
+
+
+    // warmup
+    for(cnt=0; cnt<SEMAPHORE_MAXVAL; cnt++)
+        sem_wait(data.image[ID].semptr[sem]);
+
+    // collect timing data
+    long cnt0 = data.image[ID].md[0].cnt0;
+
+    sem_wait(data.image[ID].semptr[sem]);
+    clock_gettime(CLOCK_REALTIME, &t0);
+
     for(cnt=0; cnt<NBsamples; cnt++)
-    {			
+    {
         sem_wait(data.image[ID].semptr[sem]);
         clock_gettime(CLOCK_REALTIME, &t1);
         tdiff = info_time_diff(t0, t1);
-        tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;            
+        tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
         tdiffvarray[cnt] = tdiffv;
         t0.tv_sec  = t1.tv_sec;
         t0.tv_nsec = t1.tv_nsec;
     }
     long cntdiff = data.image[ID].md[0].cnt0 - cnt0 - 1;
-    
-    info_image_streamtiming_stats_disp(tdiffvarray, NBsamples, percarray, percNarray, NBperccnt, percMedianIndex, cntdiff);
-    
 
-    free(percarray);
-    free(percNarray);
-    free(tdiffvarray);
-   
+    info_image_streamtiming_stats_disp(tdiffvarray, NBsamples, percarray, percNarray, NBperccnt, percMedianIndex, cntdiff);
+
+	if(part == NBpart-1)
+	{
+		free(percarray);
+		free(percNarray);
+		free(tdiffvarray);
+	}
+
     return 0;
 }
 
@@ -964,7 +969,7 @@ int info_image_monitor(
                 if(MonMode == 1)
                 {
                     clear();
-                    info_image_streamtiming_stats(ID_name, sem, NBtsamples);
+                    info_image_streamtiming_stats(ID_name, sem, NBtsamples, 0, 1);
                 }
 
 
