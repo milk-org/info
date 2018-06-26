@@ -653,7 +653,7 @@ int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, floa
                    percNarray[perccnt],
                    NBsamples - percNarray[perccnt],
                    1.0e6*tdiffvarray[percNarray[perccnt]], 
-                   1.0e6*(tdiffvarray[percNarray[perccnt]]-tdiffvarray[percNarray[percMedianIndex]));
+                   1.0e6*(tdiffvarray[percNarray[perccnt]]-tdiffvarray[percNarray[percMedianIndex]]) );
         }
     }
     attroff(A_BOLD|COLOR_PAIR(4));
