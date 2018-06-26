@@ -603,14 +603,14 @@ int info_pixelstats_smallImage(long ID, long NBpix)
 
 
 
-int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, float *percarray, long *percNarray, long NBperccnt, long percMedianIndex)
+int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, float *percarray, long *percNarray, long NBperccnt, long percMedianIndex, long cntdiff)
 {
 	long perccnt;
 	
 	// process timing data
     quick_sort_double(tdiffvarray, NBsamples);
         
-	printw("\n NBsamples = %ld       NBperccnt = %ld\n\n", NBsamples, NBperccnt);
+	printw("\n NBsamples = %ld  (cntdiff = %ld)     NBperccnt = %ld\n\n", NBsamples, cntdiff, NBperccnt);
    
 		
         
@@ -780,22 +780,20 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 		sem_wait(data.image[ID].semptr[sem]);
 		
 	// collect timing data
+	long cnt0 = data.image[ID].md[0].cnt0;
     for(cnt=0; cnt<NBsamples; cnt++)
-        {
+        {			
             sem_wait(data.image[ID].semptr[sem]);
-
             clock_gettime(CLOCK_REALTIME, &t1);
             tdiff = info_time_diff(t0, t1);
-            tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
-            
+            tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;            
             tdiffvarray[cnt] = tdiffv;
-            
             t0.tv_sec  = t1.tv_sec;
-            t0.tv_nsec = t1.tv_nsec;
+            t0.tv_nsec = t1.tv_nsec;            
         }
+    long cntdiff = data.image[ID].md[0].cnt0 - cnt0;
     
-    
-    info_image_streamtiming_stats_disp(tdiffvarray, NBsamples, percarray, percNarray, NBperccnt, percMedianIndex);
+    info_image_streamtiming_stats_disp(tdiffvarray, NBsamples, percarray, percNarray, NBperccnt, percMedianIndex, cntdiff);
     
 
     free(percarray);
@@ -804,6 +802,8 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
    
     return 0;
 }
+
+
 
 
 
