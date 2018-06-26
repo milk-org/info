@@ -597,6 +597,61 @@ int info_pixelstats_smallImage(long ID, long NBpix)
 }
 
 
+//
+// will drive semaphore to zero, monitor timing
+//
+// nbiter = -1 for infinite
+//
+int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
+{
+    long ID;
+    long cnt;
+    struct timespec t0;
+    struct timespec t1;
+    struct timespec tdiff;
+    double tdiffv;
+	
+	double *tdiffvarray;
+
+
+	tdiffvarray = (double*) malloc(sizeof(double)*NBsamples);
+	
+    ID = image_ID(ID_name);
+
+    for(;;)
+    {
+		// warmup
+		for(cnt=0; cnt<SEMAPHORE_MAXVAL; cnt++)
+			sem_wait(data.image[ID].semptr[sem]);
+		
+		// collect timing data
+        for(cnt=0; cnt<NBsamples; cnt++)
+        {
+            sem_wait(data.image[ID].semptr[sem]);
+
+            clock_gettime(CLOCK_REALTIME, &t1);
+            tdiff = info_time_diff(t0, t1);
+            tdiffv = 1.0*tdiff.tv_sec + 1.0e-9*tdiff.tv_nsec;
+            
+            tdiffvarray[cnt] = tdiffv;
+            
+            t0.tv_sec  = t1.tv_sec;
+            t0.tv_nsec = t1.tv_nsec;
+        }
+        
+        // process timing data
+        quick_sort_double(tdiffvarray, cnt);
+        
+        
+        
+        
+        
+    }
+
+    return 0;
+}
+
+
 
 
 
@@ -609,6 +664,13 @@ int info_image_monitor(
     long mode = 0; // 0 for large image, 1 for small image
     long NBpix;
     long npix;
+	int sem;
+
+	int MonMode = 0;
+	
+	// 0: image summary
+	// 1: timing info for sem
+	
 
     ID = image_ID(ID_name);
     if(ID==-1)
@@ -620,9 +682,19 @@ int info_image_monitor(
     {
         npix = data.image[ID].md[0].nelement;
 
+		/*  Initialize ncurses  */
+		if ( initscr() == NULL ) {
+			fprintf(stderr, "Error initialising ncurses.\n");
+			exit(EXIT_FAILURE);
+		}
+		getmaxyx(stdscr, wrow, wcol);		/* get the number of rows and columns */
+		cbreak();
+		keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
+		nodelay(stdscr, TRUE);
+		curs_set(0);
+		noecho();			/* Don't echo() while we do getch */
 
-        initscr();
-        getmaxyx(stdscr, wrow, wcol);
+
 
         if(npix<100)
             mode = 1;
@@ -636,19 +708,48 @@ int info_image_monitor(
         init_pair(2, COLOR_BLACK, COLOR_RED);
         init_pair(3, COLOR_GREEN, COLOR_BLACK);
         init_pair(4, COLOR_RED, COLOR_BLACK);
-
-        while( !kbdhit() )
+		
+		int loopOK = 1;
+        while( loopOK == 1 )
         {
-            usleep((long) (1000000.0/frequ));
-            clear();
-            attron(A_BOLD);
-            print_header(" PRESS ANY KEY TO STOP MONITOR ", '-');
-            attroff(A_BOLD);
+			usleep((long) (1000000.0/frequ));
+			char ch = getch();
+			clear();
 
-            //if(mode==0)
-            printstatus(ID);
-            //else
-            //  info_pixelstats_smallImage(ID, NBpix);
+
+            attron(A_BOLD);
+            print_header(" PRESS x TO STOP MONITOR ", '-');
+            attroff(A_BOLD);
+            
+            
+			switch (ch)
+			{
+				case 'x':
+				loopOK=0;
+				break;
+				
+				case 's':
+				MonMode = 0; // summary
+				break;				
+				
+				case '0':
+				MonMode = 1; // Sem timing
+				sem = 0;
+				break;				
+
+				case '1':
+				MonMode = 1; // Sem timing
+				sem = 1;
+				break;
+				
+				case '2':
+				MonMode = 1; // Sem timing
+				sem = 2;
+				break;
+				
+				if(MonMode == 0)
+					printstatus(ID);
+			}
 
             refresh();
         }
