@@ -889,7 +889,7 @@ int info_image_monitor(
                 sem = 2;
                 break;
                 
-            case '+':
+        /*    case '+':
                 if(MonMode == 1)
 					NBtsamples *= 2;				
                 break;
@@ -897,7 +897,7 @@ int info_image_monitor(
             case '-':
                 if(MonMode == 1)
 					NBtsamples /= 2;				
-                break;
+                break;*/
             }
 
             if(freeze==0)
