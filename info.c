@@ -634,7 +634,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 		if(N < NBsamples)
 		{
 			percNarray[perccnt] = N;
-			percarray[perccnt] = 1.0*N/NBsamples;			
+			percarray[perccnt] = 1.0*N/NBsamples;						
 			printw("   0  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
 			perccnt++;
 		}
@@ -644,7 +644,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 	for(p=0.0001;p<0.1;p*=10.0)
 		{
 			N = (long) (p * NBsamples);
-			if((N>percNarray[perccnt])&&(perccnt<perccntMAX-1))
+			if((N>percNarray[perccnt-1])&&(perccnt<perccntMAX-1))
 			{
 				percNarray[perccnt] = N;
 				percarray[perccnt] = 1.0*N/NBsamples;
@@ -656,7 +656,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 	for(p=0.1;p<0.9;p+=0.1)
 		{
 			N = (long) (p*NBsamples);
-			if((N>percNarray[perccnt])&&(perccnt<perccntMAX-1))
+			if((N>percNarray[perccnt-1])&&(perccnt<perccntMAX-1))
 			{
 				percNarray[perccnt] = N;
 				percarray[perccnt] = 1.0*N/NBsamples;
@@ -668,7 +668,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 	for(p=0.9; p<0.999; p = p + 0.5*(1.0-p))
 	{
 		N = (long) (p*NBsamples);
-			if((N>percNarray[perccnt])&&(perccnt<perccntMAX-1))
+			if((N>percNarray[perccnt-1])&&(perccnt<perccntMAX-1))
 			{
 				percNarray[perccnt] = N;
 				percarray[perccnt] = 1.0*N/NBsamples;
