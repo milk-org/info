@@ -628,6 +628,8 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 	float p;
 	float pval;
 	long N;
+	int percMedianIndex;
+	
 	
 	for(N=1;N<5;N++)
 	{
@@ -653,7 +655,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 			}
 		}
 
-	for(p=0.1;p<0.9;p+=0.1)
+	for(p=0.1;p<0.41;p+=0.1)
 		{
 			N = (long) (p*NBsamples);
 			if((N>percNarray[perccnt-1])&&(perccnt<perccntMAX-1))
@@ -664,6 +666,26 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 				perccnt++;
 			}
 		}
+	
+	p = 0.5;
+	N = (long) (p*NBsamples);
+	percNarray[perccnt] = N;
+	percarray[perccnt] = 1.0*N/NBsamples;
+	percMedianIndex = perccnt;
+	perccnt++;
+	
+	for(p=0.6;p<0.91;p+=0.1)
+		{
+			N = (long) (p*NBsamples);
+			if((N>percNarray[perccnt-1])&&(perccnt<perccntMAX-1))
+			{
+				percNarray[perccnt] = N;
+				percarray[perccnt] = 1.0*N/NBsamples;
+				//printw("   2  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
+				perccnt++;
+			}
+		}
+	
 	
 	for(p=0.9; p<0.999; p = p + 0.5*(1.0-p))
 	{
@@ -707,16 +729,34 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
         
 		printw("\n NBsamples = %ld       NBperccnt = %ld\n\n", NBsamples, NBperccnt);
    
+		
         
         float perc;
         
         for(perccnt=0; perccnt<NBperccnt; perccnt++)
         {
-			printw("%6.3f   [%10ld] [%10ld]    %10.3f us\n", 
+			if(perccnt==percMedianIndex)
+				{
+					attron(A_BOLD);
+					printw("%6.3f   [%10ld] [%10ld]    %10.3f us\n", 
 				100.0*percarray[perccnt], 
 				percNarray[perccnt],
 				NBsamples - percNarray[perccnt],
 				1.0e6*tdiffvarray[percNarray[perccnt]]);
+					attroff(A_BOLD);
+				}
+			else
+			{
+				if(tdiffvarray[percNarray[perccnt]] > 1.2 * tdiffvarray[percNarray[percMedianIndex]])
+					attron(A_BOLD|COLOR_PAIR(4));
+				
+				printw("%6.3f   [%10ld] [%10ld]    %10.3f us\n", 
+				100.0*percarray[perccnt], 
+				percNarray[perccnt],
+				NBsamples - percNarray[perccnt],
+				1.0e6*tdiffvarray[percNarray[perccnt]]);
+			}
+			attroff(A_BOLD|COLOR_PAIR(4));
 		}
     
     free(tdiffvarray);
