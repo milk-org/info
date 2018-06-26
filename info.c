@@ -47,6 +47,7 @@ int clock_gettime(int clk_id, struct timespec *t){
 #include <time.h>
 #endif
 
+#include <sched.h>
 
 #include <fcntl.h> 
 #include <termios.h>
@@ -605,44 +606,44 @@ int info_pixelstats_smallImage(long ID, long NBpix)
 
 int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, float *percarray, long *percNarray, long NBperccnt, long percMedianIndex, long cntdiff)
 {
-	long perccnt;
-	
-	// process timing data
+    long perccnt;
+
+    // process timing data
     quick_sort_double(tdiffvarray, NBsamples);
-        
-	printw("\n NBsamples = %ld  (cntdiff = %ld)     NBperccnt = %ld\n\n", NBsamples, cntdiff, NBperccnt);
-   
-		
-        
-        float perc;
-        
-        for(perccnt=0; perccnt<NBperccnt; perccnt++)
+
+    printw("\n NBsamples = %ld  (cntdiff = %ld)     NBperccnt = %ld\n\n", NBsamples, cntdiff, NBperccnt);
+
+
+
+    float perc;
+
+    for(perccnt=0; perccnt<NBperccnt; perccnt++)
+    {
+        if(perccnt==percMedianIndex)
         {
-			if(perccnt==percMedianIndex)
-				{
-					attron(A_BOLD);
-					printw("%6.3f   [%10ld] [%10ld]    %10.3f us\n", 
-				100.0*percarray[perccnt], 
-				percNarray[perccnt],
-				NBsamples - percNarray[perccnt],
-				1.0e6*tdiffvarray[percNarray[perccnt]]);
-					attroff(A_BOLD);
-				}
-			else
-			{
-				if(tdiffvarray[percNarray[perccnt]] > 1.2 * tdiffvarray[percNarray[percMedianIndex]])
-					attron(A_BOLD|COLOR_PAIR(4));
-				
-				printw("%6.3f   [%10ld] [%10ld]    %10.3f us\n", 
-				100.0*percarray[perccnt], 
-				percNarray[perccnt],
-				NBsamples - percNarray[perccnt],
-				1.0e6*tdiffvarray[percNarray[perccnt]]);
-			}
-		}
-		attroff(A_BOLD|COLOR_PAIR(4));
-	
-	return 0;
+            attron(A_BOLD);
+            printw("%6.3f   [%10ld] [%10ld]    %10.3f us\n",
+                   100.0*percarray[perccnt],
+                   percNarray[perccnt],
+                   NBsamples - percNarray[perccnt],
+                   1.0e6*tdiffvarray[percNarray[perccnt]]);
+            attroff(A_BOLD);
+        }
+        else
+        {
+            if(tdiffvarray[percNarray[perccnt]] > 1.2 * tdiffvarray[percNarray[percMedianIndex]])
+                attron(A_BOLD|COLOR_PAIR(4));
+
+            printw("%6.3f   [%10ld] [%10ld]    %10.3f us\n",
+                   100.0*percarray[perccnt],
+                   percNarray[perccnt],
+                   NBsamples - percNarray[perccnt],
+                   1.0e6*tdiffvarray[percNarray[perccnt]]);
+        }
+    }
+    attroff(A_BOLD|COLOR_PAIR(4));
+
+    return 0;
 }
 
 
@@ -772,7 +773,16 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 	
 	
 	
-	
+	int RT_priority = 80; //any number from 0-99
+    struct sched_param schedpar;
+    
+    schedpar.sched_priority = RT_priority;
+#ifndef __MACH__
+    sched_setscheduler(0, SCHED_FIFO, &schedpar);
+#endif
+
+    
+    
     ID = image_ID(ID_name);
 
 	// warmup
