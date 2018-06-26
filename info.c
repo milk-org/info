@@ -712,6 +712,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples, 
         percarray = (float*) malloc(sizeof(float)*perccntMAX);
         percNarray = (long*) malloc(sizeof(long)*perccntMAX);
         tdiffvarray = (double*) malloc(sizeof(double)*NBsamples);
+	}
 
 
         perccnt = 0;
@@ -809,7 +810,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples, 
 
 
         ID = image_ID(ID_name);
-    } // end of part=0 case
+ //   } // end of part=0 case
 
 
     // warmup
