@@ -757,10 +757,10 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 	}
 	
 	long N1;
-	for(N1=0;N1<5;N1++)
+	for(N1=5;N1>0;N1--)
 	{
 		N = NBsamples - N1;
-		if(N>0)
+		if((N>percNarray[perccnt-1])&&(perccnt<perccntMAX-1)&&(N>0))
 		{
 			percNarray[perccnt] = N;
 			percarray[perccnt] = 1.0*N/NBsamples;						
