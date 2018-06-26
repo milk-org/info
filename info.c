@@ -716,7 +716,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 				1.0e6*tdiffvarray[percNarray[perccnt]]);
 		}
     
-    free(percarray);    
+        
     free(tdiffvarray);
         
        
