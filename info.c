@@ -667,6 +667,7 @@ int info_image_monitor(
 	int sem;
 
 	int MonMode = 0;
+	char monstring[200];
 	
 	// 0: image summary
 	// 1: timing info for sem
@@ -718,7 +719,8 @@ int info_image_monitor(
 
 
             attron(A_BOLD);
-            print_header(" PRESS x TO STOP MONITOR ", '-');
+            sprintf(monstring, "Mode %d   PRESS x TO STOP MONITOR", MonMode);
+            print_header(monstring, '-');
             attroff(A_BOLD);
             
             
