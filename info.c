@@ -917,7 +917,7 @@ int info_image_monitor(
         int freeze = 0;
         
         int part = 0;
-        int NBpart = 4;
+        int NBpart = 1;
         
         while( loopOK == 1 )
         {
