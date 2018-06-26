@@ -788,20 +788,29 @@ int info_image_monitor(
 		
 		cnt = 0;
 		int loopOK = 1;
+		int freeze = 0;
         while( loopOK == 1 )
         {
 			usleep((long) (1000000.0/frequ));
 			char ch = getch();
 
-
-            attron(A_BOLD);
-            sprintf(monstring, "Mode %d   PRESS x TO STOP MONITOR", MonMode);
-            print_header(monstring, '-');
-            attroff(A_BOLD);
-            
+			if(freeze==0)
+			{
+				attron(A_BOLD);            
+				sprintf(monstring, "Mode %d   PRESS x TO STOP MONITOR", MonMode);
+				print_header(monstring, '-');
+				attroff(A_BOLD);
+			}
             
 			switch (ch)
 			{
+				case 'f':
+				if(freeze==0)
+					freeze = 1;
+				else
+					freeze = 0;
+				break;
+				
 				case 'x':
 				loopOK=0;
 				break;
@@ -826,20 +835,24 @@ int info_image_monitor(
 				break;
 			}
 			
+			if(freeze==0)
+			{
 			if(MonMode == 0)
 			{	
 				clear();
 				printstatus(ID);
 			}
 				
-			if((MonMode == 1)&&(cnt<4))
+			if(MonMode == 1)
 			{
 				info_image_streamtiming_stats(ID_name, sem, NBtsamples);
 			}
 		
 
             refresh();
-			cnt++;
+            
+            cnt++;
+			}
         }
         endwin();
     }
