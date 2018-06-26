@@ -55,8 +55,7 @@ int clock_gettime(int clk_id, struct timespec *t){
 #include <sys/wait.h> //pid
 
 #include <ncurses.h>
-
-
+#include <fcntl.h> 
 
 #include <fitsio.h>  /* required by every program that uses CFITSIO  */
 
@@ -69,6 +68,9 @@ int clock_gettime(int clk_id, struct timespec *t){
 #include "fft/fft.h"
 
 #include "info/info.h"
+
+
+
 
 
 #define SWAP(a,b) temp=(a);(a)=(b);(b)=temp;
@@ -601,7 +603,17 @@ int info_pixelstats_smallImage(long ID, long NBpix)
 
 
 
-int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, float *percarray, long *percNarray, long NBperccnt, long percMedianIndex, long cntdiff)
+int info_image_streamtiming_stats_disp(
+	double *tdiffvarray, 
+	long NBsamples, 
+	float *percarray, 
+	long *percNarray, 
+	long NBperccnt, 
+	long percMedianIndex, 
+	long cntdiff,
+	long part,
+	long NBpart
+	)
 {
     long perccnt;
 	float RMSval = 0.0;
@@ -620,7 +632,7 @@ int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, floa
 	AVEval /= NBsamples;
 	RMSval = sqrt(RMSval - AVEval*AVEval);
 	
-    printw("\n NBsamples = %ld  (cntdiff = %ld)     NBperccnt = %ld\n\n", NBsamples, cntdiff, NBperccnt);
+    printw("\n NBsamples = %ld  (cntdiff = %ld)   part %3ld/%3ld   NBperccnt = %ld\n\n", NBsamples, cntdiff, part, NBpart, NBperccnt);
 
 
 
@@ -658,7 +670,7 @@ int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, floa
     }
     attroff(A_BOLD|COLOR_PAIR(4));
 
-	printw("\n  Average Time Interval = %10.3f us    -> frequ = %10f.3 Hz\n", 1.0e6*AVEval, 1.0/AVEval);
+	printw("\n  Average Time Interval = %10.3f us    -> frequ = %10.3f Hz\n", 1.0e6*AVEval, 1.0/AVEval);
 	printw("                    RMS = %10.3f us  ( %5.3f \%)\n", 1.0e6*RMSval, 100.0*RMSval/AVEval);
 
     return 0;
@@ -821,7 +833,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples, 
     }
     long cntdiff = data.image[ID].md[0].cnt0 - cnt0 - 1;
 
-    info_image_streamtiming_stats_disp(tdiffvarray, NBsamples, percarray, percNarray, NBperccnt, percMedianIndex, cntdiff);
+    info_image_streamtiming_stats_disp(tdiffvarray, NBsamples, percarray, percNarray, NBperccnt, percMedianIndex, cntdiff, part, NBpart);
 
 	if(part == NBpart-1)
 	{
@@ -889,6 +901,7 @@ int info_image_monitor(
         if(NBpix > wrow)
             NBpix = wrow-4;
 
+
         start_color();
         init_pair(1, COLOR_BLACK, COLOR_WHITE);
         init_pair(2, COLOR_BLACK, COLOR_RED);
@@ -902,10 +915,14 @@ int info_image_monitor(
         cnt = 0;
         int loopOK = 1;
         int freeze = 0;
+        
+        int part = 0;
+        int NBpart = 4;
+        
         while( loopOK == 1 )
         {
             usleep((long) (1000000.0/frequ));
-            char ch = getch();
+            int ch = getch();
 
             if(freeze==0)
             {
@@ -956,6 +973,17 @@ int info_image_monitor(
                 if(MonMode == 1)
 					NBtsamples /= 2;				
                 break;
+
+            case KEY_UP:
+                if(MonMode == 1)
+					NBpart++;				
+                break;
+                
+            case KEY_DOWN:
+                if(MonMode == 1)
+					NBpart--;				
+                break;           
+            
             }
 
             if(freeze==0)
@@ -969,7 +997,13 @@ int info_image_monitor(
                 if(MonMode == 1)
                 {
                     clear();
-                    info_image_streamtiming_stats(ID_name, sem, NBtsamples, 0, 1);
+                    
+                    if(part>NBpart-1)
+						part = 0;
+                    info_image_streamtiming_stats(ID_name, sem, NBtsamples, part, NBpart);
+                    part ++;
+                    if(part>NBpart-1)
+						part = 0;
                 }
 
 
