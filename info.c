@@ -809,7 +809,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
         t0.tv_sec  = t1.tv_sec;
         t0.tv_nsec = t1.tv_nsec;
     }
-    long cntdiff = data.image[ID].md[0].cnt0 - cnt0;
+    long cntdiff = data.image[ID].md[0].cnt0 - cnt0 -1;
     
     info_image_streamtiming_stats_disp(tdiffvarray, NBsamples, percarray, percNarray, NBperccnt, percMedianIndex, cntdiff);
     
