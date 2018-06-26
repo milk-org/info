@@ -597,6 +597,58 @@ int info_pixelstats_smallImage(long ID, long NBpix)
 }
 
 
+
+
+
+
+
+
+int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, float *percarray, long *percNarray, long NBperccnt, long percMedianIndex)
+{
+	long perccnt;
+	
+	// process timing data
+    quick_sort_double(tdiffvarray, NBsamples);
+        
+	printw("\n NBsamples = %ld       NBperccnt = %ld\n\n", NBsamples, NBperccnt);
+   
+		
+        
+        float perc;
+        
+        for(perccnt=0; perccnt<NBperccnt; perccnt++)
+        {
+			if(perccnt==percMedianIndex)
+				{
+					attron(A_BOLD);
+					printw("%6.3f   [%10ld] [%10ld]    %10.3f us\n", 
+				100.0*percarray[perccnt], 
+				percNarray[perccnt],
+				NBsamples - percNarray[perccnt],
+				1.0e6*tdiffvarray[percNarray[perccnt]]);
+					attroff(A_BOLD);
+				}
+			else
+			{
+				if(tdiffvarray[percNarray[perccnt]] > 1.2 * tdiffvarray[percNarray[percMedianIndex]])
+					attron(A_BOLD|COLOR_PAIR(4));
+				
+				printw("%6.3f   [%10ld] [%10ld]    %10.3f us\n", 
+				100.0*percarray[perccnt], 
+				percNarray[perccnt],
+				NBsamples - percNarray[perccnt],
+				1.0e6*tdiffvarray[percNarray[perccnt]]);
+			}
+		}
+		attroff(A_BOLD|COLOR_PAIR(4));
+	
+	return 0;
+}
+
+
+
+
+
 //
 // will drive semaphore to zero, monitor timing
 //
@@ -618,10 +670,13 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 	long NBperccnt;
 	long perccntMAX = 1000;
 	
-	float percarray[perccntMAX];
-	long percNarray[perccntMAX];
+	float *percarray;
+	long *percNarray;
 
 
+
+	percarray = (float*) malloc(sizeof(float)*perccntMAX);
+	percNarray = (long*) malloc(sizeof(long)*perccntMAX);
 	tdiffvarray = (double*) malloc(sizeof(double)*NBsamples);
 	
 	perccnt = 0;
@@ -720,12 +775,12 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 	
     ID = image_ID(ID_name);
 
-		// warmup
-		for(cnt=0; cnt<SEMAPHORE_MAXVAL; cnt++)
-			sem_wait(data.image[ID].semptr[sem]);
+	// warmup
+	for(cnt=0; cnt<SEMAPHORE_MAXVAL; cnt++)
+		sem_wait(data.image[ID].semptr[sem]);
 		
-		// collect timing data
-        for(cnt=0; cnt<NBsamples; cnt++)
+	// collect timing data
+    for(cnt=0; cnt<NBsamples; cnt++)
         {
             sem_wait(data.image[ID].semptr[sem]);
 
@@ -738,42 +793,13 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
             t0.tv_sec  = t1.tv_sec;
             t0.tv_nsec = t1.tv_nsec;
         }
-        
-        // process timing data
-        quick_sort_double(tdiffvarray, cnt);
-        
-		printw("\n NBsamples = %ld       NBperccnt = %ld\n\n", NBsamples, NBperccnt);
-   
-		
-        
-        float perc;
-        
-        for(perccnt=0; perccnt<NBperccnt; perccnt++)
-        {
-			if(perccnt==percMedianIndex)
-				{
-					attron(A_BOLD);
-					printw("%6.3f   [%10ld] [%10ld]    %10.3f us\n", 
-				100.0*percarray[perccnt], 
-				percNarray[perccnt],
-				NBsamples - percNarray[perccnt],
-				1.0e6*tdiffvarray[percNarray[perccnt]]);
-					attroff(A_BOLD);
-				}
-			else
-			{
-				if(tdiffvarray[percNarray[perccnt]] > 1.2 * tdiffvarray[percNarray[percMedianIndex]])
-					attron(A_BOLD|COLOR_PAIR(4));
-				
-				printw("%6.3f   [%10ld] [%10ld]    %10.3f us\n", 
-				100.0*percarray[perccnt], 
-				percNarray[perccnt],
-				NBsamples - percNarray[perccnt],
-				1.0e6*tdiffvarray[percNarray[perccnt]]);
-			}
-		}
-		attroff(A_BOLD|COLOR_PAIR(4));
     
+    
+    info_image_streamtiming_stats_disp(tdiffvarray, NBsamples, percarray, percNarray, NBperccnt, percMedianIndex);
+    
+
+    free(percarray);
+    free(percNarray);
     free(tdiffvarray);
    
     return 0;
@@ -839,7 +865,7 @@ int info_image_monitor(
         init_pair(3, COLOR_GREEN, COLOR_BLACK);
         init_pair(4, COLOR_RED, COLOR_BLACK);
 
-        long NBtsamples = 1000;
+        long NBtsamples = 1024;
 
         cnt = 0;
         int loopOK = 1;
