@@ -756,8 +756,8 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 				NBsamples - percNarray[perccnt],
 				1.0e6*tdiffvarray[percNarray[perccnt]]);
 			}
-			attroff(A_BOLD|COLOR_PAIR(4));
 		}
+		attroff(A_BOLD|COLOR_PAIR(4));
     
     free(tdiffvarray);
    
