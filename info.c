@@ -978,13 +978,18 @@ int info_image_monitor(
                 break;
 
             case KEY_UP:
-                if(MonMode == 1)
-					NBpart++;				
+                if(MonMode == 1){
+					NBpart++;	
+					part = -1;
+				}			
                 break;
                 
             case KEY_DOWN:
                 if(MonMode == 1)
+                {
 					NBpart--;				
+					part = -1;
+				}
                 break;           
             
             }
