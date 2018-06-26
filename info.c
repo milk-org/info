@@ -672,7 +672,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 				perccnt++;
 			}
 	}
-	
+	NBperccnt = perccnt;
 	
     ID = image_ID(ID_name);
 
@@ -698,7 +698,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
         // process timing data
         quick_sort_double(tdiffvarray, cnt);
         
-        printw("\n NBsamples = %ld\n\n", NBsamples);
+        printw("\n NBsamples = %ld       NBperccnt = %ld\n\n", NBsamples, NBperccnt);
         
         float perc;
         
