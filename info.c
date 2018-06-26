@@ -635,7 +635,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 		{
 			percNarray[perccnt] = N;
 			percarray[perccnt] = 1.0*N/NBsamples;						
-			printw("   0  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
+			//printw("   0  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
 			perccnt++;
 		}
 	}
@@ -648,7 +648,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 			{
 				percNarray[perccnt] = N;
 				percarray[perccnt] = 1.0*N/NBsamples;
-				printw("   1  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
+				//printw("   1  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
 				perccnt++;
 			}
 		}
@@ -660,7 +660,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 			{
 				percNarray[perccnt] = N;
 				percarray[perccnt] = 1.0*N/NBsamples;
-				printw("   2  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
+				//printw("   2  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
 				perccnt++;
 			}
 		}
@@ -672,7 +672,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 			{
 				percNarray[perccnt] = N;
 				percarray[perccnt] = 1.0*N/NBsamples;
-				printw("   3  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
+				//printw("   3  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
 				perccnt++;
 			}
 	}
@@ -680,7 +680,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 	
 	
 	
-	/*
+	
     ID = image_ID(ID_name);
 
 		// warmup
@@ -704,21 +704,21 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
         
         // process timing data
         quick_sort_double(tdiffvarray, cnt);
-      */  
-   //printw("\n NBsamples = %ld       NBperccnt = %ld\n\n", NBsamples, NBperccnt);
-   sleep(1.0);
+        
+		printw("\n NBsamples = %ld       NBperccnt = %ld\n\n", NBsamples, NBperccnt);
    
-        /*
+        
         float perc;
         
         for(perccnt=0; perccnt<NBperccnt; perccnt++)
         {
-			printw("%5.2f   [%10ld]    %10.3 us\n", 
-				percarray[perccnt], 
-				percNarray[perccnt], 
+			printw("%6.3f   [%10ld] [%10ld]    %10.3 us\n", 
+				100.0*percarray[perccnt], 
+				percNarray[perccnt],
+				NBsamples - percNarray[perccnt],
 				1.0e6*tdiffvarray[percNarray[perccnt]]);
 		}
-    */
+    
     free(tdiffvarray);
    
     return 0;
@@ -729,23 +729,23 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 
 
 int info_image_monitor(
-		const char *ID_name, 
-		double frequ
-		)
+    const char *ID_name,
+    double frequ
+)
 {
     long ID;
     long mode = 0; // 0 for large image, 1 for small image
     long NBpix;
     long npix;
-	int sem;
-	long cnt;
+    int sem;
+    long cnt;
 
-	int MonMode = 0;
-	char monstring[200];
-	
-	// 0: image summary
-	// 1: timing info for sem
-	
+    int MonMode = 0;
+    char monstring[200];
+
+    // 0: image summary
+    // 1: timing info for sem
+
 
     ID = image_ID(ID_name);
     if(ID==-1)
@@ -757,17 +757,17 @@ int info_image_monitor(
     {
         npix = data.image[ID].md[0].nelement;
 
-		/*  Initialize ncurses  */
-		if ( initscr() == NULL ) {
-			fprintf(stderr, "Error initialising ncurses.\n");
-			exit(EXIT_FAILURE);
-		}
-		getmaxyx(stdscr, wrow, wcol);		/* get the number of rows and columns */
-		cbreak();
-		keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
-		nodelay(stdscr, TRUE);
-		curs_set(0);
-		noecho();			/* Don't echo() while we do getch */
+        /*  Initialize ncurses  */
+        if ( initscr() == NULL ) {
+            fprintf(stderr, "Error initialising ncurses.\n");
+            exit(EXIT_FAILURE);
+        }
+        getmaxyx(stdscr, wrow, wcol);		/* get the number of rows and columns */
+        cbreak();
+        keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
+        nodelay(stdscr, TRUE);
+        curs_set(0);
+        noecho();			/* Don't echo() while we do getch */
 
 
 
@@ -783,76 +783,77 @@ int info_image_monitor(
         init_pair(2, COLOR_BLACK, COLOR_RED);
         init_pair(3, COLOR_GREEN, COLOR_BLACK);
         init_pair(4, COLOR_RED, COLOR_BLACK);
-		
-		long NBtsamples = 1000;
-		
-		cnt = 0;
-		int loopOK = 1;
-		int freeze = 0;
+
+        long NBtsamples = 1000;
+
+        cnt = 0;
+        int loopOK = 1;
+        int freeze = 0;
         while( loopOK == 1 )
         {
-			usleep((long) (1000000.0/frequ));
-			char ch = getch();
+            usleep((long) (1000000.0/frequ));
+            char ch = getch();
 
-			if(freeze==0)
-			{
-				attron(A_BOLD);            
-				sprintf(monstring, "Mode %d   PRESS x TO STOP MONITOR", MonMode);
-				print_header(monstring, '-');
-				attroff(A_BOLD);
-			}
-            
-			switch (ch)
-			{
-				case 'f':
-				if(freeze==0)
-					freeze = 1;
-				else
-					freeze = 0;
-				break;
-				
-				case 'x':
-				loopOK=0;
-				break;
-				
-				case 's':
-				MonMode = 0; // summary
-				break;				
-				
-				case '0':
-				MonMode = 1; // Sem timing
-				sem = 0;
-				break;				
+            if(freeze==0)
+            {
+                attron(A_BOLD);
+                sprintf(monstring, "Mode %d   PRESS x TO STOP MONITOR", MonMode);
+                print_header(monstring, '-');
+                attroff(A_BOLD);
+            }
 
-				case '1':
-				MonMode = 1; // Sem timing
-				sem = 1;
-				break;
-				
-				case '2':
-				MonMode = 1; // Sem timing
-				sem = 2;
-				break;
-			}
-			
-			if(freeze==0)
-			{
-			if(MonMode == 0)
-			{	
-				clear();
-				printstatus(ID);
-			}
-				
-			if(MonMode == 1)
-			{
-				info_image_streamtiming_stats(ID_name, sem, NBtsamples);
-			}
-		
+            switch (ch)
+            {
+            case 'f':
+                if(freeze==0)
+                    freeze = 1;
+                else
+                    freeze = 0;
+                break;
 
-            refresh();
-            
-            cnt++;
-			}
+            case 'x':
+                loopOK=0;
+                break;
+
+            case 's':
+                MonMode = 0; // summary
+                break;
+
+            case '0':
+                MonMode = 1; // Sem timing
+                sem = 0;
+                break;
+
+            case '1':
+                MonMode = 1; // Sem timing
+                sem = 1;
+                break;
+
+            case '2':
+                MonMode = 1; // Sem timing
+                sem = 2;
+                break;
+            }
+
+            if(freeze==0)
+            {
+                if(MonMode == 0)
+                {
+                    clear();
+                    printstatus(ID);
+                }
+
+                if(MonMode == 1)
+                {
+                    clear();
+                    info_image_streamtiming_stats(ID_name, sem, NBtsamples);
+                }
+
+
+                refresh();
+
+                cnt++;
+            }
         }
         endwin();
     }
