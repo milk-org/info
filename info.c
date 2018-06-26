@@ -659,8 +659,8 @@ int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, floa
     }
     attroff(A_BOLD|COLOR_PAIR(4));
 
-	printw("\n  Average Time Interval = %10.3f us\n", AVEval);
-	printw("                    RMS = %10.3f us  ( %5.3f \%)\n", RMSval, 100.0*RMSval/AVEval);
+	printw("\n  Average Time Interval = %10.3f us\n", 1.0e6*AVEval);
+	printw("                    RMS = %10.3f us  ( %5.3f \%)\n", 1.0e6*RMSval, 100.0*RMSval/AVEval);
 
     return 0;
 }
