@@ -738,6 +738,7 @@ int info_image_monitor(
     long NBpix;
     long npix;
 	int sem;
+	long cnt;
 
 	int MonMode = 0;
 	char monstring[200];
@@ -785,6 +786,7 @@ int info_image_monitor(
 		
 		long NBtsamples = 1000;
 		
+		cnt = 0;
 		int loopOK = 1;
         while( loopOK == 1 )
         {
@@ -826,15 +828,19 @@ int info_image_monitor(
 			}
 			
 			if(MonMode == 0)
+			{	
+				clear();
 				printstatus(ID);
+			}
 				
-			if(MonMode == 1)
+			if((MonMode == 1)&&(cnt<4))
 			{
 				info_image_streamtiming_stats(ID_name, sem, NBtsamples);
 			}
 		
 
             refresh();
+			cnt++;
         }
         endwin();
     }
