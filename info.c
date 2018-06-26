@@ -1008,7 +1008,7 @@ int info_image_monitor(
                     
                     if(part>NBpart-1)
 						part = 0;
-                    info_image_streamtiming_stats(ID_name, sem, NBtsamples, part, NBpart);
+                    info_image_streamtiming_stats(ID_name, sem, NBtsamples, 0, 1); //part, NBpart);
                     part ++;
                     if(part>NBpart-1)
 						part = 0;
