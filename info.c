@@ -748,10 +748,11 @@ int info_image_monitor(
 				MonMode = 1; // Sem timing
 				sem = 2;
 				break;
-				
-				if(MonMode == 0)
-					printstatus(ID);
 			}
+			
+			if(MonMode == 0)
+				printstatus(ID);
+		
 
             refresh();
         }
