@@ -601,9 +601,6 @@ int info_pixelstats_smallImage(long ID, long NBpix)
 
 
 
-
-
-
 int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, float *percarray, long *percNarray, long NBperccnt, long percMedianIndex, long cntdiff)
 {
     long perccnt;
@@ -619,8 +616,9 @@ int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, floa
 		AVEval += tdiffvarray[i];
 		RMSval +=  tdiffvarray[i]*tdiffvarray[i];
 	}
-	RMSval = sqrt((RMSval - AVEval*AVEval)/NBsamples);
+	RMSval = RMSval/NBsamples;
 	AVEval /= NBsamples;
+	RMSval = sqrt(RMSval - AVEval*AVEval);
 	
     printw("\n NBsamples = %ld  (cntdiff = %ld)     NBperccnt = %ld\n\n", NBsamples, cntdiff, NBperccnt);
 
