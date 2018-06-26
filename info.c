@@ -702,7 +702,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 	NBperccnt = perccnt;
 	
 	long N1;
-	for(N1=5;N1>0;N1++)
+	for(N1=0;N1<5;N1++)
 	{
 		N = NBsamples - N1;
 		if(N>0)
@@ -889,7 +889,7 @@ int info_image_monitor(
                 sem = 2;
                 break;
                 
-        /*    case '+':
+            case '+':
                 if(MonMode == 1)
 					NBtsamples *= 2;				
                 break;
@@ -897,7 +897,7 @@ int info_image_monitor(
             case '-':
                 if(MonMode == 1)
 					NBtsamples /= 2;				
-                break;*/
+                break;
             }
 
             if(freeze==0)
