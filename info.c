@@ -712,7 +712,7 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
         
         for(perccnt=0; perccnt<NBperccnt; perccnt++)
         {
-			printw("%6.3f   [%10ld] [%10ld]    %10.3 us\n", 
+			printw("%6.3f   [%10ld] [%10ld]    %10.3f us\n", 
 				100.0*percarray[perccnt], 
 				percNarray[perccnt],
 				NBsamples - percNarray[perccnt],
