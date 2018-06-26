@@ -658,7 +658,7 @@ int info_image_streamtiming_stats_disp(double *tdiffvarray, long NBsamples, floa
     }
     attroff(A_BOLD|COLOR_PAIR(4));
 
-	printw("\n  Average Time Interval = %10.3f us\n", 1.0e6*AVEval);
+	printw("\n  Average Time Interval = %10.3f us    -> frequ = %10f.3 Hz\n", 1.0e6*AVEval, 1.0/AVEval);
 	printw("                    RMS = %10.3f us  ( %5.3f \%)\n", 1.0e6*RMSval, 100.0*RMSval/AVEval);
 
     return 0;
@@ -712,7 +712,6 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 		{
 			percNarray[perccnt] = N;
 			percarray[perccnt] = 1.0*N/NBsamples;						
-			//printw("   0  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
 			perccnt++;
 		}
 	}
@@ -725,7 +724,6 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 			{
 				percNarray[perccnt] = N;
 				percarray[perccnt] = 1.0*N/NBsamples;
-				//printw("   1  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
 				perccnt++;
 			}
 		}
@@ -737,7 +735,6 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 			{
 				percNarray[perccnt] = N;
 				percarray[perccnt] = 1.0*N/NBsamples;
-				//printw("   2  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
 				perccnt++;
 			}
 		}
@@ -756,7 +753,6 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 			{
 				percNarray[perccnt] = N;
 				percarray[perccnt] = 1.0*N/NBsamples;
-				//printw("   2  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
 				perccnt++;
 			}
 		}
@@ -769,7 +765,6 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 			{
 				percNarray[perccnt] = N;
 				percarray[perccnt] = 1.0*N/NBsamples;
-				//printw("   3  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
 				perccnt++;
 			}
 	}
@@ -782,7 +777,6 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples)
 		{
 			percNarray[perccnt] = N;
 			percarray[perccnt] = 1.0*N/NBsamples;						
-			//printw("   0  %2ld  %5ld  %10.6f\n", perccnt, percNarray[perccnt], percarray[perccnt]);
 			perccnt++;
 		}
 	}
