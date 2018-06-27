@@ -612,7 +612,9 @@ int info_image_streamtiming_stats_disp(
 	long percMedianIndex, 
 	long cntdiff,
 	long part,
-	long NBpart
+	long NBpart,
+	double tdiffvmax, 
+	long tdiffcntmax
 	)
 {
     long perccnt;
@@ -672,6 +674,7 @@ int info_image_streamtiming_stats_disp(
 
 	printw("\n  Average Time Interval = %10.3f us    -> frequ = %10.3f Hz\n", 1.0e6*AVEval, 1.0/AVEval);
 	printw("                    RMS = %10.3f us  ( %5.3f \%)\n", 1.0e6*RMSval, 100.0*RMSval/AVEval);
+	printw("  Max delay : %10.3f us   frame # %ld\n", 1.0e6*tdiffvmax, tdiffcntmax);
 
     return 0;
 }
@@ -822,6 +825,9 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples, 
 
     sem_wait(data.image[ID].semptr[sem]);
     clock_gettime(CLOCK_REALTIME, &t0);
+	
+	double tdiffvmax = 0.0;
+	long tdiffcntmax = 0;
 
     for(cnt=0; cnt<NBsamples; cnt++)
     {
@@ -832,10 +838,16 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples, 
         tdiffvarray[cnt] = tdiffv;
         t0.tv_sec  = t1.tv_sec;
         t0.tv_nsec = t1.tv_nsec;
+        
+        if(tdiffv>tdiffvmax)
+        {
+			tdiffvmax = tdiffv;
+			tdiffcntmax = cnt;
+		}
     }
     long cntdiff = data.image[ID].md[0].cnt0 - cnt0 - 1;
 
-    info_image_streamtiming_stats_disp(tdiffvarray, NBsamples, percarray, percNarray, NBperccnt, percMedianIndex, cntdiff, part, NBpart);
+    info_image_streamtiming_stats_disp(tdiffvarray, NBsamples, percarray, percNarray, NBperccnt, percMedianIndex, cntdiff, part, NBpart, tdiffvmax, tdiffcntmax);
 
 	if(part == NBpart-1)
 	{
