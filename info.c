@@ -634,6 +634,7 @@ int info_image_streamtiming_stats_disp(
 	AVEval /= NBsamples;
 	RMSval = sqrt(RMSval - AVEval*AVEval);
 	
+	
     printw("\n NBsamples = %ld  (cntdiff = %ld)   part %3ld/%3ld   NBperccnt = %ld\n\n", NBsamples, cntdiff, part, NBpart, NBperccnt);
 
 
@@ -847,6 +848,8 @@ int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples, 
     }
     long cntdiff = data.image[ID].md[0].cnt0 - cnt0 - 1;
 
+
+	printw("Stream : %s\n", ID_name);
     info_image_streamtiming_stats_disp(tdiffvarray, NBsamples, percarray, percNarray, NBperccnt, percMedianIndex, cntdiff, part, NBpart, tdiffvmax, tdiffcntmax);
 
 	if(part == NBpart-1)
