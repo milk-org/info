@@ -688,9 +688,6 @@ int info_image_streamtiming_stats_disp(
 
 
 //
-// will drive semaphore to zero, monitor timing
-//
-// nbiter = -1 for infinite
 //
 int info_image_streamtiming_stats(const char *ID_name, int sem, long NBsamples, long part, long NBpart)
 {
