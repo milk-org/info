@@ -409,18 +409,18 @@ int printstatus(long ID)
     for(s=0;s<data.image[ID].md[0].sem;s++)
     {
         sem_getvalue(data.image[ID].semptr[s], &semval);   
-        printw(" % 4d ", semval);
+        printw(" %6d ", semval);
     }
     printw("]\n");
  
     printw("[ WRITE   ", data.image[ID].md[0].sem);
     for(s=0;s<data.image[ID].md[0].sem;s++)   
-        printw(" % 4d ", data.image[ID].semWritePID[s]);
+        printw(" %6d ", data.image[ID].semWritePID[s]);
     printw("]\n");
  
     printw("[ READ    ", data.image[ID].md[0].sem);
     for(s=0;s<data.image[ID].md[0].sem;s++)   
-        printw(" % 4d ", data.image[ID].semReadPID[s]);
+        printw(" %6d ", data.image[ID].semReadPID[s]);
     printw("]\n");
         
     
