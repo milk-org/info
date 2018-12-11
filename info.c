@@ -405,14 +405,24 @@ int printstatus(long ID)
     printw("[cnt0 %8d] [%6.2f Hz] ", data.image[ID].md[0].cnt0, frequ);
     printw("[cnt1 %8d]\n", data.image[ID].md[0].cnt1);
  
-    printw("[%ld sems ", data.image[ID].md[0].sem);
-   for(s=0;s<data.image[ID].md[0].sem;s++)
+    printw("[%3ld sems ", data.image[ID].md[0].sem);
+    for(s=0;s<data.image[ID].md[0].sem;s++)
     {
         sem_getvalue(data.image[ID].semptr[s], &semval);   
-        printw(" % 3d ", semval);
+        printw(" % 4d ", semval);
     }
-    printw("]");
-    
+    printw("]\n");
+ 
+    printw("[ WRITE   ", data.image[ID].md[0].sem);
+    for(s=0;s<data.image[ID].md[0].sem;s++)   
+        printw(" % 4d ", data.image[ID].semWritePID[s]);
+    printw("]\n");
+ 
+    printw("[ READ    ", data.image[ID].md[0].sem);
+    for(s=0;s<data.image[ID].md[0].sem;s++)   
+        printw(" % 4d ", data.image[ID].semReadPID[s]);
+    printw("]\n");
+        
     
     sem_getvalue(data.image[ID].semlog, &semval);   
         printw(" [semlog % 3d] ", semval);
