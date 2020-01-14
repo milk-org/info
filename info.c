@@ -4,8 +4,6 @@
  * 
  * Computes information about images
  *  
- * @author  O. Guyon
- * @date    7 Jul 2017
  *
  * 
  * @bug No known bugs.
