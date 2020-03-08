@@ -69,9 +69,6 @@ int clock_gettime(int clk_id, struct timespec *t){
 
 
 
-#define SWAP(a,b) temp=(a);(a)=(b);(b)=temp;
-
-
 
 //extern DATA data;
 
@@ -100,61 +97,106 @@ static int info_image_monitor(const char *ID_name, double frequ);
 
 errno_t info_profile_cli()
 {
-  if(CLI_checkarg(1,4)+CLI_checkarg(2,3)+CLI_checkarg(3,1)+CLI_checkarg(4,1)+CLI_checkarg(5,1)+CLI_checkarg(6,2)==0)
+    if(
+        CLI_checkarg(1, CLIARG_IMG) +
+        CLI_checkarg(2, CLIARG_STR_NOT_IMG) +
+        CLI_checkarg(3, CLIARG_FLOAT) +
+        CLI_checkarg(4, CLIARG_FLOAT) +
+        CLI_checkarg(5, CLIARG_FLOAT) +
+        CLI_checkarg(6, CLIARG_LONG)
+        == 0 )
     {
-      profile(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string, data.cmdargtoken[3].val.numf, data.cmdargtoken[4].val.numf, data.cmdargtoken[5].val.numf, data.cmdargtoken[6].val.numl);
-      return 0;
+        profile(
+            data.cmdargtoken[1].val.string,
+            data.cmdargtoken[2].val.string,
+            data.cmdargtoken[3].val.numf,
+            data.cmdargtoken[4].val.numf,
+            data.cmdargtoken[5].val.numf,
+            data.cmdargtoken[6].val.numl
+        );
+        return CLICMD_SUCCESS;
     }
-  else
-    return 1;
+    else {
+        return CLICMD_INVALID_ARG;
+    }
 }
 
 
 errno_t info_image_monitor_cli()
 {
-  if(CLI_checkarg(1,4)+CLI_checkarg(2,1)==0)
+    if(
+        CLI_checkarg(1, CLIARG_IMG) +
+        CLI_checkarg(2, CLIARG_FLOAT)
+        == 0 )
     {
-      info_image_monitor(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.numf);
-      return 0;
+        info_image_monitor(
+            data.cmdargtoken[1].val.string,
+            data.cmdargtoken[2].val.numf
+        );
+        return CLICMD_SUCCESS;
     }
-  else
-    return 1;
+    else {
+        return CLICMD_INVALID_ARG;
+    }
 }
+
 
 errno_t info_image_stats_cli()
 {
-  if(CLI_checkarg(1,4)==0)
+    if(
+        CLI_checkarg(1, CLIARG_IMG)
+        == 0 )
     {
-      info_image_stats(data.cmdargtoken[1].val.string, "");
-      return 0;
+        info_image_stats(
+            data.cmdargtoken[1].val.string,
+            ""
+        );
+        return CLICMD_SUCCESS;
     }
-  else
-    return 1;
+    else {
+        return CLICMD_INVALID_ARG;
+    }
 }
+
 
 
 errno_t info_cubestats_cli()
 {
-  if(CLI_checkarg(1,4)+CLI_checkarg(2,4)+CLI_checkarg(3,3)==0)
+    if(
+        CLI_checkarg(1, CLIARG_IMG) +
+        CLI_checkarg(2, CLIARG_IMG) +
+        CLI_checkarg(3, CLIARG_STR_NOT_IMG)
+        == 0 )
     {
-      info_cubestats(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string, data.cmdargtoken[3].val.string);
-      return 0;
+        info_cubestats(
+            data.cmdargtoken[1].val.string,
+            data.cmdargtoken[2].val.string,
+            data.cmdargtoken[3].val.string
+        );
+        return CLICMD_SUCCESS;
     }
-  else
-    return 1;
+    else {
+        return CLICMD_INVALID_ARG;
+    }
 }
 
 
 
 errno_t info_image_statsf_cli()
 {
-  if(CLI_checkarg(1,4)==0)
+    if(
+    CLI_checkarg(1, CLIARG_IMG)
+    == 0 )
     {
-      info_image_stats(data.cmdargtoken[1].val.string, "fileout");
-      return 0;
+        info_image_stats(
+            data.cmdargtoken[1].val.string,
+            "fileout"
+        );
+        return CLICMD_SUCCESS;
     }
-  else
-    return 1;
+    else {
+        return CLICMD_INVALID_ARG;
+    }
 }
 
 
@@ -163,13 +205,20 @@ errno_t info_image_statsf_cli()
 
 errno_t info_cubeMatchMatrix_cli()
 {
-	if(CLI_checkarg(1,4)+CLI_checkarg(2,5)==0)
-	{
-		info_cubeMatchMatrix(data.cmdargtoken[1].val.string, data.cmdargtoken[2].val.string);
-		return 0;
-	}
-	else
-		return 1;
+    if(
+        CLI_checkarg(1, CLIARG_IMG) +
+        CLI_checkarg(2, CLIARG_STR)
+        == 0 )
+    {
+        info_cubeMatchMatrix(
+            data.cmdargtoken[1].val.string,
+            data.cmdargtoken[2].val.string
+        );
+        return CLICMD_SUCCESS;
+    }
+    else {
+        return CLICMD_INVALID_ARG;
+    }
 }
 
 
@@ -352,8 +401,8 @@ errno_t printstatus(
     struct timespec tnow;
     struct timespec tdiff;
     double tdiffv;
-    char str[500];
-    char str1[500];
+    char str[STRINGMAXLEN_DEFAULT];
+    char str1[STRINGMAXLEN_DEFAULT];
 
     long j;
     double frequ;
@@ -422,10 +471,34 @@ errno_t printstatus(
 
     for(j=1; j<data.image[ID].md[0].naxis; j++)
     {
-        sprintf(str1, "%s x %6ld", str, (long) data.image[ID].md[0].size[j]);
+		{
+			int slen = snprintf(str1, STRINGMAXLEN_DEFAULT, "%s x %6ld", str, (long) data.image[ID].md[0].size[j]);
+			if(slen<1) {
+    PRINT_ERROR("snprintf wrote <1 char");
+    abort(); // can't handle this error any other way
+    }
+    if(slen >= STRINGMAXLEN_DEFAULT) {
+    PRINT_ERROR("snprintf string truncation");
+    abort(); // can't handle this error any other way
+    }
+		}
+        
         strcpy(str, str1);
     }
-    sprintf(str1, "%s]", str);
+    
+    
+    {
+		int slen = snprintf(str1, STRINGMAXLEN_DEFAULT, "%s]", str);
+		if(slen<1) {
+    PRINT_ERROR("snprintf wrote <1 char");
+    abort(); // can't handle this error any other way
+    }
+    if(slen >= STRINGMAXLEN_DEFAULT) {
+    PRINT_ERROR("snprintf string truncation");
+    abort(); // can't handle this error any other way
+    }
+	}
+    
     strcpy(str, str1);
 
     printw("%-28s\n", str);
