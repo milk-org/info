@@ -8,6 +8,32 @@
  * 
  */
 
+
+
+/* ================================================================== */
+/* ================================================================== */
+/*            MODULE INFO                                             */
+/* ================================================================== */
+/* ================================================================== */
+
+#define MODULE_NAME              "info"
+
+// module default short name
+// all CLI calls to this module functions will be <shortname>.<funcname>
+// if set to "", then calls use <funcname>
+#define MODULE_SHORTNAME_DEFAULT ""
+
+// Module short description 
+#define MODULE_DESCRIPTION       "Image information and statistics"
+
+// Application to which module belongs
+#define MODULE_APPLICATION       "milk"
+
+
+
+
+
+
 #define _GNU_SOURCE
 
 #include <stdint.h>
@@ -229,19 +255,7 @@ errno_t info_cubeMatchMatrix_cli()
 
 
 
-void __attribute__ ((constructor)) libinit_info()
-{
-	if ( INITSTATUS_info == 0 )
-	{
-		init_info();
-		RegisterModule(__FILE__, "milk", "Image information and statistics");
-		INITSTATUS_info = 1; 
-	}
-}
-
-
-
-errno_t init_info()
+static errno_t init_module_CLI()
 {
     /* =============================================================================================== */
     /*                                                                                                 */
@@ -323,6 +337,28 @@ errno_t init_info()
 
     return RETURN_SUCCESS;
 }
+
+
+
+
+
+errno_t init_info()
+{
+    init_module_CLI();
+    return RETURN_SUCCESS;
+}
+
+
+// Module initialization macro in CLIcore.h
+//
+INIT_MODULE_LIB();
+
+
+
+
+
+
+
 
 
 
