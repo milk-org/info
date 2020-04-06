@@ -3,7 +3,6 @@
 
 
 void __attribute__ ((constructor)) libinit_info();
-int init_info();
 
 
 

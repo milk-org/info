@@ -16,8 +16,6 @@
 /* ================================================================== */
 /* ================================================================== */
 
-#define MODULE_NAME              "info"
-
 // module default short name
 // all CLI calls to this module functions will be <shortname>.<funcname>
 // if set to "", then calls use <funcname>
@@ -98,13 +96,6 @@ int clock_gettime(int clk_id, struct timespec *t)
 
 
 
-
-//extern DATA data;
-
-static int INITSTATUS_info = 0;
-
-
-
 static int wcol, wrow; // window size
 
 static long long cntlast;
@@ -112,6 +103,39 @@ static struct timespec tlast;
 
 
 static int info_image_monitor(const char *ID_name, double frequ);
+
+
+
+
+
+
+
+
+
+
+
+/* ================================================================== */
+/* ================================================================== */
+/*            INITIALIZE LIBRARY                                      */
+/* ================================================================== */
+/* ================================================================== */
+
+// Module initialization macro in CLIcore.h
+// macro argument defines module name for bindings
+//
+INIT_MODULE_LIB(info)
+
+
+
+/* ================================================================== */
+/* ================================================================== */
+/*            COMMAND LINE INTERFACE (CLI) FUNCTIONS                  */
+/* ================================================================== */
+/* ================================================================== */
+
+
+
+
 
 
 
@@ -346,21 +370,6 @@ static errno_t init_module_CLI()
 
     return RETURN_SUCCESS;
 }
-
-
-
-
-
-errno_t init_info()
-{
-    init_module_CLI();
-    return RETURN_SUCCESS;
-}
-
-
-// Module initialization macro in CLIcore.h
-//
-INIT_MODULE_LIB();
 
 
 
