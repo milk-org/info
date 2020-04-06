@@ -2,7 +2,7 @@
 #define INFO_H
 
 
-void __attribute__ ((constructor)) libinit_info();
+void __attribute__((constructor)) libinit_info();
 
 
 
@@ -55,8 +55,8 @@ double ssquare(const char *ID_name);
 double rms_dev(const char *ID_name);
 
 errno_t info_image_stats(
-		const char *ID_name, 
-		const char *options
+    const char *ID_name,
+    const char *options
 );
 
 imageID info_cubestats(
@@ -99,7 +99,8 @@ double background_photon_noise(
     const char *ID_name
 );
 
-int test_structure_function(const char *ID_name, long NBpoints, const char *fname);
+int test_structure_function(const char *ID_name, long NBpoints,
+                            const char *fname);
 
 imageID full_structure_function(
     const char *ID_name,
@@ -114,7 +115,7 @@ imageID fft_structure_function(
 );
 
 imageID info_cubeMatchMatrix(
-    const char* IDin_name,
-    const char* IDout_name
+    const char *IDin_name,
+    const char *IDout_name
 );
 #endif
