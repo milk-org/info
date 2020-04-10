@@ -109,10 +109,6 @@ imageID full_structure_function(
 );
 
 
-imageID fft_structure_function(
-    const char *ID_in,
-    const char *ID_out
-);
 
 imageID info_cubeMatchMatrix(
     const char *IDin_name,

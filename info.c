@@ -3009,41 +3009,6 @@ imageID full_structure_function(
 
 
 
-imageID fft_structure_function(
-    const char *ID_in,
-    const char *ID_out
-)
-{
-    imageID  ID;
-    double   value;
-    uint64_t nelement;
-    uint8_t  datatype;
-
-    autocorrelation(ID_in, "stftmp");
-    ID = image_ID("stftmp");
-    nelement = data.image[ID].md[0].nelement;
-
-    datatype = data.image[ID].md[0].datatype;
-    if(datatype == _DATATYPE_FLOAT)
-    {
-        value = -data.image[ID].array.F[0];
-    }
-    if(datatype == _DATATYPE_DOUBLE)
-    {
-        value = -data.image[ID].array.D[0];
-    }
-
-    arith_image_cstadd("stftmp", value, "stftmp1");
-    delete_image_ID("stftmp");
-    imageID IDout = arith_image_cstmult("stftmp1", -2.0 / sqrt(nelement), ID_out);
-    delete_image_ID("stftmp1");
-
-    return IDout;
-}
-
-
-
-
 
 imageID info_cubeMatchMatrix(
     const char *IDin_name,
