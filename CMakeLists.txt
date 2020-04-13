@@ -1,9 +1,29 @@
-project(lib_info_project)
+# library name
+set(LIBNAME "milkinfo")
+
+
+set(SOURCEFILES
+	info.c)
+
+set(INCLUDEFILES
+	info.h)
+
+
+# DEFAULT SETTINGS 
+# Do not change unless needed
+# =====================================================================
+
+project(lib_${LIBNAME}_project)
 
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 include_directories ("${PROJECT_SOURCE_DIR}/..")
-add_library(info SHARED info.c)
 
-install(TARGETS info DESTINATION lib)
-install(FILES info.h DESTINATION include)
+
+# Library can be compiled from multiple source files
+# Convention: the main souce file is named <libname>.c
+# 
+add_library(${LIBNAME} SHARED ${SOURCEFILES})
+
+install(TARGETS ${LIBNAME} DESTINATION lib)
+install(FILES ${INCLUDEFILES} DESTINATION include)
 
