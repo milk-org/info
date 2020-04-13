@@ -83,7 +83,6 @@ int clock_gettime(int clk_id, struct timespec *t)
 #include <fitsio.h>  /* required by every program that uses CFITSIO  */
 
 #include "CommandLineInterface/CLIcore.h"
-#include "00CORE/00CORE.h"
 #include "COREMOD_tools/COREMOD_tools.h"
 #include "COREMOD_memory/COREMOD_memory.h"
 #include "COREMOD_arith/COREMOD_arith.h"
@@ -91,7 +90,7 @@ int clock_gettime(int clk_id, struct timespec *t)
 
 
 #include "info/info.h"
-
+#include "fft/fft.h"
 
 
 
