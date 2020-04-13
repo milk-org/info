@@ -25,7 +25,7 @@
 #define MODULE_DESCRIPTION       "Image information and statistics"
 
 // Application to which module belongs
-#define MODULE_APPLICATION       "milkcore"
+#define MODULE_APPLICATION       "milk"
 
 
 
@@ -89,7 +89,7 @@ int clock_gettime(int clk_id, struct timespec *t)
 #include "COREMOD_iofits/COREMOD_iofits.h"
 
 
-#include "info/info.h"
+#include "info/info_local.h"
 #include "fft/fft.h"
 
 
@@ -428,6 +428,7 @@ errno_t kbdhit(void)
 
 
 
+
 errno_t print_header(const char *str, char c)
 {
     long n;
@@ -449,8 +450,6 @@ errno_t print_header(const char *str, char c)
 
     return RETURN_SUCCESS;
 }
-
-
 
 
 
