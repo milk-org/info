@@ -25,7 +25,7 @@
 #define MODULE_DESCRIPTION       "Image information and statistics"
 
 // Application to which module belongs
-#define MODULE_APPLICATION       "milk (core)"
+#define MODULE_APPLICATION       "milkcore"
 
 
 
