@@ -5,7 +5,6 @@
 void __attribute__((constructor)) libinit_info();
 
 
-/*
 int kbdhit(void);
 
 int print_header(const char *str, char c);
@@ -115,6 +114,6 @@ imageID info_cubeMatchMatrix(
     const char *IDout_name
 );
 
-*/
+
 
 #endif

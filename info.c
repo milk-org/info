@@ -19,7 +19,7 @@
 // module default short name
 // all CLI calls to this module functions will be <shortname>.<funcname>
 // if set to "", then calls use <funcname>
-#define MODULE_SHORTNAME_DEFAULT ""
+#define MODULE_SHORTNAME_DEFAULT "info"
 
 // Module short description
 #define MODULE_DESCRIPTION       "Image information and statistics"
@@ -1990,6 +1990,8 @@ errno_t make_histogram(
 }
 
 
+
+
 double ssquare(const char *ID_name)
 {
     int ID;
@@ -2009,6 +2011,9 @@ double ssquare(const char *ID_name)
         }
     return(ssquare);
 }
+
+
+
 
 double rms_dev(const char *ID_name)
 {
