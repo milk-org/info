@@ -89,7 +89,7 @@ int clock_gettime(int clk_id, struct timespec *t)
 #include "COREMOD_iofits/COREMOD_iofits.h"
 
 
-#include "info/info_local.h"
+#include "info/info.h"
 #include "fft/fft.h"
 
 
