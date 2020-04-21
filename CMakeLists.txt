@@ -28,3 +28,6 @@ add_library(${LIBNAME} SHARED ${SOURCEFILES})
 install(TARGETS ${LIBNAME} DESTINATION lib)
 install(FILES ${INCLUDEFILES} DESTINATION include/${SRCNAME})
 
+install(PROGRAMS
+			scripts/milk-shmimmon
+        DESTINATION bin)
