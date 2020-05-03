@@ -4,10 +4,32 @@ set(SRCNAME "info")
 
 
 set(SOURCEFILES
-	${SRCNAME}.c)
+	${SRCNAME}.c
+	cubeMatchMatrix.c
+	cubestats.c
+	image_stats.c
+	imagemon.c
+	improfile.c
+	kbdhit.c
+	percentile.c
+	print_header.c
+	streamtiming_stats.c
+	timediff.c
+)
 
 set(INCLUDEFILES
-	${SRCNAME}.h)
+	${SRCNAME}.h
+	cubeMatchMatrix.h
+	cubestats.h
+	image_stats.h
+	imagemon.h
+	improfile.h
+	kbdhit.h
+	percentile.h
+	print_header.h
+	streamtiming_stats.h
+	timediff.h
+)
 
 
 # DEFAULT SETTINGS 
