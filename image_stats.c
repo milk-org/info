@@ -146,7 +146,7 @@ errno_t info_image_stats(
         nelements =  data.image[ID].md[0].nelement;
 
         datatype = data.image[ID].md[0].datatype;
-        tmp_long = data.image[ID].md[0].nelement * TYPESIZE[datatype];
+        tmp_long = data.image[ID].md[0].nelement * ImageStreamIO_typesize(datatype);
         printf("\n");
         printf("Image size (->imsize0...):     [");
         printf("% ld", (long) data.image[ID].md[0].size[0]);
