@@ -5,3 +5,5 @@
 Makefile
 Makefile.in
 *.la
+local/
+
