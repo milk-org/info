@@ -31,6 +31,14 @@ set(INCLUDEFILES
 	timediff.h
 )
 
+set(SCRIPTS
+	scripts/milk-shmimmon
+)
+
+set(LINKLIBS
+	CLIcore
+)
+
 
 # DEFAULT SETTINGS
 # Do not change unless needed
@@ -46,12 +54,15 @@ include_directories ("${PROJECT_SOURCE_DIR}/..")
 # Convention: the main souce file is named <libname>.c
 #
 add_library(${LIBNAME} SHARED ${SOURCEFILES})
-target_include_directories(${LIBNAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
-target_link_libraries(${LIBNAME} PRIVATE CLIcore)
+
+target_include_directories(${LIBNAME} PUBLIC
+	${CMAKE_CURRENT_SOURCE_DIR}/..
+	${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(${LIBNAME} PRIVATE ${LINKLIBS})
 
 install(TARGETS ${LIBNAME} DESTINATION lib)
 install(FILES ${INCLUDEFILES} DESTINATION include/${SRCNAME})
 
-install(PROGRAMS
-			scripts/milk-shmimmon
-        DESTINATION bin)
+install(PROGRAMS ${SCRIPTS} DESTINATION bin)
