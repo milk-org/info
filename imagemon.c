@@ -295,7 +295,7 @@ errno_t printstatus(
     sem_getvalue(data.image[ID].semlog, &semval);
     printw(" [semlog % 3d] ", semval);
 
-    printw(" [circbuff %3d %3d]", data.image[ID].md->CBindex, data.image[ID].md->CBsize);
+    printw(" [circbuff %3d/%3d  %4ld]", data.image[ID].md->CBindex, data.image[ID].md->CBsize, data.image[ID].md->CBcycle);
 
     printw("\n");
 
