@@ -16,13 +16,44 @@
 #include "timediff.h"
 
 
+
 static long long cntlast;
 static struct timespec tlast;
-
 
 extern int infoscreen_wcol;
 extern int infoscreen_wrow;
 
+
+
+// Local variables pointers
+static char *instreamname;
+static double *updatefrequency;
+
+
+
+static CLICMDARGDEF farg[] =
+{
+    {
+        CLIARG_IMG, ".insname", "input stream", "im1",
+        CLIARG_VISIBLE_DEFAULT,
+        (void **) &instreamname
+    },
+    {
+        CLIARG_FLOAT, ".frequ", "frequency [Hz]", "3.0",
+        CLIARG_VISIBLE_DEFAULT,
+        (void **) &updatefrequency
+    }
+};
+
+
+
+
+static CLICMDDATA CLIcmddata =
+{
+    "imgmon",
+    "image monitor",
+    CLICMD_FIELDS_DEFAULTS
+};
 
 
 
@@ -37,48 +68,45 @@ errno_t info_image_monitor(
 
 
 
-// ==========================================
-// Command line interface wrapper function(s)
-// ==========================================
 
-
-static errno_t info_image_monitor_cli()
+static errno_t compute_function()
 {
-    if(
-        CLI_checkarg(1, CLIARG_IMG) +
-        CLI_checkarg(2, CLIARG_FLOAT)
-        == 0)
-    {
-        info_image_monitor(
-            data.cmdargtoken[1].val.string,
-            data.cmdargtoken[2].val.numf
-        );
-        return CLICMD_SUCCESS;
-    }
-    else
-    {
-        return CLICMD_INVALID_ARG;
-    }
-}
+    DEBUG_TRACEPOINT(" ");
 
-// ==========================================
-// Register CLI command(s)
-// ==========================================
+    INSERT_STD_PROCINFO_COMPUTEFUNC_START
 
-errno_t imagemon_addCLIcmd()
-{
-    RegisterCLIcommand(
-        "imgmon",
-        __FILE__,
-        info_image_monitor_cli,
-        "image monitor",
-        "<image> <frequ>",
-        "imgmon im1 30",
-        "int info_image_monitor(const char *ID_name, double frequ)"
+//    printf("stream    : %s\n", instreamname);
+//    printf("Frequency = %f\n", *updatefrequency);
+
+    info_image_monitor(
+        instreamname,
+        *updatefrequency
     );
+
+    INSERT_STD_PROCINFO_COMPUTEFUNC_END
+
+    DEBUG_TRACEPOINT(" ");
 
     return RETURN_SUCCESS;
 }
+
+
+INSERT_STD_FPSCLIfunctions
+
+// Register function in CLI
+errno_t CLIADDCMD_info__imagemon()
+{
+    INSERT_STD_CLIREGISTERFUNC
+
+    return RETURN_SUCCESS;
+}
+
+
+
+
+
+
+
 
 
 
@@ -267,6 +295,7 @@ errno_t printstatus(
     sem_getvalue(data.image[ID].semlog, &semval);
     printw(" [semlog % 3d] ", semval);
 
+    printw(" [circbuff %3d %3d]", data.image[ID].md->CBindex, data.image[ID].md->CBsize);
 
     printw("\n");
 
@@ -773,7 +802,8 @@ errno_t info_image_monitor(
             fprintf(stderr, "Error initialising ncurses.\n");
             exit(EXIT_FAILURE);
         }
-        getmaxyx(stdscr, infoscreen_wrow, infoscreen_wcol);		/* get the number of rows and columns */
+        getmaxyx(stdscr, infoscreen_wrow,
+                 infoscreen_wcol);		/* get the number of rows and columns */
         cbreak();
         keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
         nodelay(stdscr, TRUE);
