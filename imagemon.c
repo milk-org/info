@@ -315,6 +315,10 @@ errno_t printstatus(
 
 
     vcnt = (long *) malloc(sizeof(long) * NBhistopt);
+    if(vcnt == NULL) {
+        PRINT_ERROR("malloc returns NULL pointer");
+        abort();
+    }
 
 
 
@@ -853,69 +857,69 @@ errno_t info_image_monitor(
 
             switch(ch)
             {
-                case 'f':
-                    if(freeze == 0)
-                    {
-                        freeze = 1;
-                    }
-                    else
-                    {
-                        freeze = 0;
-                    }
-                    break;
+            case 'f':
+                if(freeze == 0)
+                {
+                    freeze = 1;
+                }
+                else
+                {
+                    freeze = 0;
+                }
+                break;
 
-                case 'x':
-                    loopOK = 0;
-                    break;
+            case 'x':
+                loopOK = 0;
+                break;
 
-                case 's':
-                    MonMode = 0; // summary
-                    break;
+            case 's':
+                MonMode = 0; // summary
+                break;
 
-                case '0':
-                    MonMode = 1; // Sem timing
-                    sem = 0;
-                    break;
+            case '0':
+                MonMode = 1; // Sem timing
+                sem = 0;
+                break;
 
-                case '1':
-                    MonMode = 1; // Sem timing
-                    sem = 1;
-                    break;
+            case '1':
+                MonMode = 1; // Sem timing
+                sem = 1;
+                break;
 
-                case '2':
-                    MonMode = 1; // Sem timing
-                    sem = 2;
-                    break;
+            case '2':
+                MonMode = 1; // Sem timing
+                sem = 2;
+                break;
 
-                case '+':
-                    if(MonMode == 1)
-                    {
-                        NBtsamples *= 2;
-                    }
-                    break;
+            case '+':
+                if(MonMode == 1)
+                {
+                    NBtsamples *= 2;
+                }
+                break;
 
-                case '-':
-                    if(MonMode == 1)
-                    {
-                        NBtsamples /= 2;
-                    }
-                    break;
+            case '-':
+                if(MonMode == 1)
+                {
+                    NBtsamples /= 2;
+                }
+                break;
 
-                case KEY_UP:
-                    if(MonMode == 1)
-                    {
-                        NBpart++;
-                        part = -1;
-                    }
-                    break;
+            case KEY_UP:
+                if(MonMode == 1)
+                {
+                    NBpart++;
+                    part = -1;
+                }
+                break;
 
-                case KEY_DOWN:
-                    if(MonMode == 1)
-                    {
-                        NBpart--;
-                        part = -1;
-                    }
-                    break;
+            case KEY_DOWN:
+                if(MonMode == 1)
+                {
+                    NBpart--;
+                    part = -1;
+                }
+                break;
 
             }
 

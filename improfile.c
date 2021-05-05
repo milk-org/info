@@ -110,12 +110,36 @@ errno_t profile(
     naxes[0] = data.image[ID].md[0].size[0];
     naxes[1] = data.image[ID].md[0].size[1];
     nelements = naxes[0] * naxes[1];
+
     dist = (double *) malloc(nb_step * sizeof(double));
+    if(dist == NULL) {
+        PRINT_ERROR("malloc returns NULL pointer");
+        abort();
+    }
+
     mean = (double *) malloc(nb_step * sizeof(double));
+    if(mean == NULL) {
+        PRINT_ERROR("malloc returns NULL pointer");
+        abort();
+    }
+
     rms = (double *) malloc(nb_step * sizeof(double));
+    if(rms == NULL) {
+        PRINT_ERROR("malloc returns NULL pointer");
+        abort();
+    }
+
     counts = (long *) malloc(nb_step * sizeof(long));
+    if(counts == NULL) {
+        PRINT_ERROR("malloc returns NULL pointer");
+        abort();
+    }
 
     mask = (int *) malloc(sizeof(int) * nelements);
+    if(mask == NULL) {
+        PRINT_ERROR("malloc returns NULL pointer");
+        abort();
+    }
 
     IDmask = image_ID("profmask");
     if(IDmask != -1)
@@ -242,7 +266,13 @@ errno_t profile2im(
     double    r, x;
 
     ID = create_2Dimage_ID(out, size, size);
+
     profile_array = (double *) malloc(sizeof(double) * nbpoints);
+    if(profile_array == NULL) {
+        PRINT_ERROR("malloc returns NULL pointer");
+        abort();
+    }
+
 
     if((fp = fopen(profile_name, "r")) == NULL)
     {

@@ -26,6 +26,11 @@ float img_percentile_float(
     nelements = naxes[0] * naxes[1];
 
     array = (float *) malloc(nelements * sizeof(float));
+    if(array == NULL) {
+        PRINT_ERROR("malloc returns NULL pointer");
+        abort();
+    }
+
     for(unsigned long ii = 0; ii < nelements; ii++)
     {
         array[ii] = data.image[ID].array.F[ii];
@@ -68,6 +73,11 @@ double img_percentile_double(
     nelements = naxes[0] * naxes[1];
 
     array = (double *) malloc(nelements * sizeof(double));
+    if(array == NULL) {
+        PRINT_ERROR("malloc returns NULL pointer");
+        abort();
+    }
+
     for(unsigned long ii = 0; ii < nelements; ii++)
     {
         array[ii] = data.image[ID].array.F[ii];
