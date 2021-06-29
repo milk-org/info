@@ -62,7 +62,7 @@ errno_t cubeMatchMatrix_addCLIcmd()
         "<imagecube> <output file>",
         "cubeslmatch incube outim",
         "long info_cubeMatchMatrix(const char* IDin_name, const char* IDout_name)"
-    );    
+    );
 
     return RETURN_SUCCESS;
 }
@@ -122,8 +122,7 @@ imageID info_cubeMatchMatrix(
 
     if(IDout == -1)
     {
-        create_2Dimage_ID(IDout_name, zsize, zsize);
-        IDout = image_ID(IDout_name);
+        create_2Dimage_ID(IDout_name, zsize, zsize, &IDout);
 
         fpout = fopen("outtest.txt", "w");
         fclose(fpout);
@@ -225,7 +224,7 @@ imageID info_cubeMatchMatrix(
     {
         printf("PROCESSING IMAGE  %ld pixels\n", xysize);
 
-        IDrmsim = create_2Dimage_ID("imRMS", xsize, ysize);
+        create_2Dimage_ID("imRMS", xsize, ysize, &IDrmsim);
         // kmax = (long) (zfrac*ksize);
         printf("KEEPING %ld out of %u pairs\n", kmax, ksize);
 

@@ -257,6 +257,8 @@ errno_t profile2im(
     const char     *out
 )
 {
+    DEBUG_TRACE_FSTART();
+
     FILE     *fp;
     imageID   ID;
     double   *profile_array;
@@ -265,7 +267,8 @@ errno_t profile2im(
     double    tmp;
     double    r, x;
 
-    ID = create_2Dimage_ID(out, size, size);
+    FUNC_CHECK_RETURN(
+        create_2Dimage_ID(out, size, size, &ID));
 
     profile_array = (double *) malloc(sizeof(double) * nbpoints);
     if(profile_array == NULL) {
@@ -311,6 +314,7 @@ errno_t profile2im(
 
     free(profile_array);
 
+    DEBUG_TRACE_FEXIT();
     return RETURN_SUCCESS;
 }
 
