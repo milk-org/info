@@ -154,7 +154,7 @@ imageID info_cubeMatchMatrix(
                 data.image[IDout].array.F[kk2 * zsize + kk1] = (float) totv;
             }
 
-            save_fits(IDout_name, "!testout.fits");
+            save_fits(IDout_name, "testout.fits");
         }
         printf("\n");
     }
@@ -244,7 +244,7 @@ imageID info_cubeMatchMatrix(
         {
             data.image[IDrmsim].array.F[ii] = sqrt(data.image[IDrmsim].array.F[ii] / kmax);
         }
-        save_fits("imRMS", "!imRMS.fits");
+        save_fits("imRMS", "imRMS.fits");
     }
 
 
