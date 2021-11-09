@@ -36,12 +36,12 @@ static CLICMDARGDEF farg[] =
     {
         CLIARG_IMG, ".insname", "input stream", "im1",
         CLIARG_VISIBLE_DEFAULT,
-        (void **) &instreamname
+        (void **) &instreamname, NULL
     },
     {
         CLIARG_FLOAT, ".frequ", "frequency [Hz]", "3.0",
         CLIARG_VISIBLE_DEFAULT,
-        (void **) &updatefrequency
+        (void **) &updatefrequency, NULL
     }
 };
 
