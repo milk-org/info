@@ -9,8 +9,7 @@
  */
 
 #define MODULE_SHORTNAME_DEFAULT "info"
-#define MODULE_DESCRIPTION       "Image information and statistics"
-
+#define MODULE_DESCRIPTION "Image information and statistics"
 
 #include "CommandLineInterface/CLIcore.h"
 
@@ -20,16 +19,10 @@
 #include "imagemon.h"
 #include "improfile.h"
 
-
-
 int infoscreen_wcol;
 int infoscreen_wrow; // window size
 
-
-
-
 INIT_MODULE_LIB(info)
-
 
 static errno_t init_module_CLI()
 {
@@ -42,25 +35,8 @@ static errno_t init_module_CLI()
     image_stats_addCLIcmd();
     improfile_addCLIcmd();
 
-
     return RETURN_SUCCESS;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* number of pixels brighter than value */
 /*long brighter(
@@ -95,7 +71,6 @@ static errno_t init_module_CLI()
     return(brighter);
 }
 */
-
 
 /*
 errno_t img_nbpix_flux(
@@ -133,8 +108,6 @@ errno_t img_nbpix_flux(
     return RETURN_SUCCESS;
 }
 */
-
-
 
 /*
 errno_t img_histoc_float(
@@ -268,7 +241,6 @@ errno_t make_histogram(
 }
 */
 
-
 /*
 double ssquare(const char *ID_name)
 {
@@ -317,13 +289,6 @@ double rms_dev(const char *ID_name)
 }
 */
 
-
-
-
-
-
-
-
 /*
 double img_min(const char *ID_name)
 {
@@ -361,12 +326,6 @@ double img_max(const char *ID_name)
     return(max);
 }
 */
-
-
-
-
-
-
 
 /*
 
@@ -441,13 +400,6 @@ errno_t printpix(
 }
 */
 
-
-
-
-
-
-
-
 /* uses the repartition function F of the normal distribution law */
 /* F(0) = 0.5 */
 /* F(-0.1 * sig) = 0.460172162723 */
@@ -514,8 +466,6 @@ double background_photon_noise(
     return(value);
 }
 */
-
-
 
 /*
 errno_t test_structure_function(
@@ -620,7 +570,3 @@ imageID full_structure_function(
 }
 
 */
-
-
-
-
