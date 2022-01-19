@@ -6,9 +6,10 @@
 #include <math.h>
 #include <ncurses.h>
 
+#include "CommandLineInterface/CLIcore.h"
+
 #include "COREMOD_arith/COREMOD_arith.h"
 #include "COREMOD_memory/COREMOD_memory.h"
-#include "CommandLineInterface/CLIcore.h"
 
 #include "print_header.h"
 #include "streamtiming_stats.h"
