@@ -57,11 +57,12 @@ static errno_t help_function()
     return RETURN_SUCCESS;
 }
 
-// ==========================================
-// Forward declaration(s)
-// ==========================================
+
 
 errno_t info_image_monitor(const char *ID_name, double frequ);
+
+
+
 
 static errno_t compute_function()
 {
@@ -129,6 +130,8 @@ errno_t printstatus(imageID ID)
     long   vcntmax;
     int    semval;
     long   s;
+
+    TUI_printfw("[ %3d x %3d ] ", wcol, wrow);
 
     TUI_printfw("%s  ", data.image[ID].name);
 
