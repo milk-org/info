@@ -788,6 +788,8 @@ errno_t printstatus(imageID ID)
     return RETURN_SUCCESS;
 }
 
+
+
 errno_t info_image_monitor(const char *ID_name, double frequ)
 {
     imageID ID;
@@ -808,169 +810,170 @@ errno_t info_image_monitor(const char *ID_name, double frequ)
         {
             printf("Image %s not found in memory\n\n", ID_name);
             fflush(stdout);
+
+            return RETURN_SUCCESS;
         }
-    else
+
+
+    npix = data.image[ID].md[0].nelement;
+
+    /*  Initialize ncurses  */
+    if (initscr() == NULL)
         {
-            npix = data.image[ID].md[0].nelement;
-
-            /*  Initialize ncurses  */
-            if (initscr() == NULL)
-                {
-                    fprintf(stderr, "Error initialising ncurses.\n");
-                    exit(EXIT_FAILURE);
-                }
-            getmaxyx(stdscr,
-                     infoscreen_wrow,
-                     infoscreen_wcol); /* get the number of rows and columns */
-            cbreak();
-            keypad(stdscr, TRUE); /* We get F1, F2 etc..		*/
-            nodelay(stdscr, TRUE);
-            curs_set(0);
-            noecho(); /* Don't echo() while we do getch */
-
-            // if(npix<100)
-            //  mode = 1;
-
-            NBpix = npix;
-            if (NBpix > infoscreen_wrow)
-                {
-                    NBpix = infoscreen_wrow - 4;
-                }
-
-            start_color();
-            init_pair(1, COLOR_BLACK, COLOR_WHITE);
-            init_pair(2, COLOR_BLACK, COLOR_RED);
-            init_pair(3, COLOR_GREEN, COLOR_BLACK);
-            init_pair(4, COLOR_YELLOW, COLOR_BLACK);
-            init_pair(5, COLOR_RED, COLOR_BLACK);
-            init_pair(6, COLOR_BLACK, COLOR_RED);
-
-            long NBtsamples = 1024;
-
-            cnt        = 0;
-            int loopOK = 1;
-            int freeze = 0;
-
-            int part   = 0;
-            int NBpart = 4;
-
-            while (loopOK == 1)
-                {
-                    usleep((long) (1000000.0 / frequ));
-                    int ch = getch();
-
-                    if (freeze == 0)
-                        {
-                            attron(A_BOLD);
-                            sprintf(monstring,
-                                    "Mode %d   PRESS x TO STOP MONITOR",
-                                    MonMode);
-                            print_header(monstring, '-');
-                            attroff(A_BOLD);
-                        }
-
-                    switch (ch)
-                        {
-                        case 'f':
-                            if (freeze == 0)
-                                {
-                                    freeze = 1;
-                                }
-                            else
-                                {
-                                    freeze = 0;
-                                }
-                            break;
-
-                        case 'x':
-                            loopOK = 0;
-                            break;
-
-                        case 's':
-                            MonMode = 0; // summary
-                            break;
-
-                        case '0':
-                            MonMode = 1; // Sem timing
-                            sem     = 0;
-                            break;
-
-                        case '1':
-                            MonMode = 1; // Sem timing
-                            sem     = 1;
-                            break;
-
-                        case '2':
-                            MonMode = 1; // Sem timing
-                            sem     = 2;
-                            break;
-
-                        case '+':
-                            if (MonMode == 1)
-                                {
-                                    NBtsamples *= 2;
-                                }
-                            break;
-
-                        case '-':
-                            if (MonMode == 1)
-                                {
-                                    NBtsamples /= 2;
-                                }
-                            break;
-
-                        case KEY_UP:
-                            if (MonMode == 1)
-                                {
-                                    NBpart++;
-                                    part = -1;
-                                }
-                            break;
-
-                        case KEY_DOWN:
-                            if (MonMode == 1)
-                                {
-                                    NBpart--;
-                                    part = -1;
-                                }
-                            break;
-                        }
-
-                    if (freeze == 0)
-                        {
-                            if (MonMode == 0)
-                                {
-                                    clear();
-                                    printstatus(ID);
-                                }
-
-                            if (MonMode == 1)
-                                {
-                                    clear();
-
-                                    if (part > NBpart - 1)
-                                        {
-                                            part = 0;
-                                        }
-                                    info_image_streamtiming_stats(
-                                        ID_name,
-                                        sem,
-                                        NBtsamples,
-                                        0,
-                                        1); // part, NBpart);
-                                    part++;
-                                    if (part > NBpart - 1)
-                                        {
-                                            part = 0;
-                                        }
-                                }
-
-                            refresh();
-
-                            cnt++;
-                        }
-                }
-            endwin();
+            fprintf(stderr, "Error initialising ncurses.\n");
+            exit(EXIT_FAILURE);
         }
+    getmaxyx(stdscr,
+             infoscreen_wrow,
+             infoscreen_wcol); /* get the number of rows and columns */
+    cbreak();
+    keypad(stdscr, TRUE); /* We get F1, F2 etc..		*/
+    nodelay(stdscr, TRUE);
+    curs_set(0);
+    noecho(); /* Don't echo() while we do getch */
+
+    // if(npix<100)
+    //  mode = 1;
+
+    NBpix = npix;
+    if (NBpix > infoscreen_wrow)
+        {
+            NBpix = infoscreen_wrow - 4;
+        }
+
+    start_color();
+    init_pair(1, COLOR_BLACK, COLOR_WHITE);
+    init_pair(2, COLOR_BLACK, COLOR_RED);
+    init_pair(3, COLOR_GREEN, COLOR_BLACK);
+    init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(5, COLOR_RED, COLOR_BLACK);
+    init_pair(6, COLOR_BLACK, COLOR_RED);
+
+    long NBtsamples = 1024;
+
+    cnt        = 0;
+    int loopOK = 1;
+    int freeze = 0;
+
+    int part   = 0;
+    int NBpart = 4;
+
+    while (loopOK == 1)
+        {
+            usleep((long) (1000000.0 / frequ));
+            int ch = getch();
+
+            if (freeze == 0)
+                {
+                    attron(A_BOLD);
+                    sprintf(monstring,
+                            "Mode %d   PRESS x TO STOP MONITOR",
+                            MonMode);
+                    print_header(monstring, '-');
+                    attroff(A_BOLD);
+                }
+
+            switch (ch)
+                {
+                case 'f':
+                    if (freeze == 0)
+                        {
+                            freeze = 1;
+                        }
+                    else
+                        {
+                            freeze = 0;
+                        }
+                    break;
+
+                case 'x':
+                    loopOK = 0;
+                    break;
+
+                case 's':
+                    MonMode = 0; // summary
+                    break;
+
+                case '0':
+                    MonMode = 1; // Sem timing
+                    sem     = 0;
+                    break;
+
+                case '1':
+                    MonMode = 1; // Sem timing
+                    sem     = 1;
+                    break;
+
+                case '2':
+                    MonMode = 1; // Sem timing
+                    sem     = 2;
+                    break;
+
+                case '+':
+                    if (MonMode == 1)
+                        {
+                            NBtsamples *= 2;
+                        }
+                    break;
+
+                case '-':
+                    if (MonMode == 1)
+                        {
+                            NBtsamples /= 2;
+                        }
+                    break;
+
+                case KEY_UP:
+                    if (MonMode == 1)
+                        {
+                            NBpart++;
+                            part = -1;
+                        }
+                    break;
+
+                case KEY_DOWN:
+                    if (MonMode == 1)
+                        {
+                            NBpart--;
+                            part = -1;
+                        }
+                    break;
+                }
+
+            if (freeze == 0)
+                {
+                    if (MonMode == 0)
+                        {
+                            clear();
+                            printstatus(ID);
+                        }
+
+                    if (MonMode == 1)
+                        {
+                            clear();
+
+                            if (part > NBpart - 1)
+                                {
+                                    part = 0;
+                                }
+                            info_image_streamtiming_stats(ID_name,
+                                                          sem,
+                                                          NBtsamples,
+                                                          0,
+                                                          1); // part, NBpart);
+                            part++;
+                            if (part > NBpart - 1)
+                                {
+                                    part = 0;
+                                }
+                        }
+
+                    refresh();
+
+                    cnt++;
+                }
+        }
+    endwin();
+
     return RETURN_SUCCESS;
 }
