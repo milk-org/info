@@ -26,10 +26,10 @@ errno_t kbdhit(void)
     fcntl(STDIN_FILENO, F_SETFL, oldf);
 
     if (ch != EOF)
-        {
-            //     ungetc(ch, stdin);
-            return RETURN_FAILURE;
-        }
+    {
+        //     ungetc(ch, stdin);
+        return RETURN_FAILURE;
+    }
 
     return RETURN_SUCCESS;
 }

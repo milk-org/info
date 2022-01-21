@@ -21,26 +21,26 @@ float img_percentile_float(const char *ID_name, float p)
 
     array = (float *) malloc(nelements * sizeof(float));
     if (array == NULL)
-        {
-            PRINT_ERROR("malloc returns NULL pointer");
-            abort();
-        }
+    {
+        PRINT_ERROR("malloc returns NULL pointer");
+        abort();
+    }
 
     for (unsigned long ii = 0; ii < nelements; ii++)
-        {
-            array[ii] = data.image[ID].array.F[ii];
-        }
+    {
+        array[ii] = data.image[ID].array.F[ii];
+    }
 
     quick_sort_float(array, nelements);
 
     n = (uint64_t) (p * naxes[1] * naxes[0]);
     if (n > 0)
+    {
+        if (n > (nelements - 1))
         {
-            if (n > (nelements - 1))
-                {
-                    n = (nelements - 1);
-                }
+            n = (nelements - 1);
         }
+    }
     value = array[n];
     free(array);
 
@@ -65,26 +65,26 @@ double img_percentile_double(const char *ID_name, double p)
 
     array = (double *) malloc(nelements * sizeof(double));
     if (array == NULL)
-        {
-            PRINT_ERROR("malloc returns NULL pointer");
-            abort();
-        }
+    {
+        PRINT_ERROR("malloc returns NULL pointer");
+        abort();
+    }
 
     for (unsigned long ii = 0; ii < nelements; ii++)
-        {
-            array[ii] = data.image[ID].array.F[ii];
-        }
+    {
+        array[ii] = data.image[ID].array.F[ii];
+    }
 
     quick_sort_double(array, nelements);
 
     n = (uint64_t) (p * naxes[1] * naxes[0]);
     if (n > 0)
+    {
+        if (n > (nelements - 1))
         {
-            if (n > (nelements - 1))
-                {
-                    n = (nelements - 1);
-                }
+            n = (nelements - 1);
         }
+    }
     value = array[n];
     free(array);
 
@@ -101,13 +101,13 @@ double img_percentile(const char *ID_name, double p)
     datatype = data.image[ID].md[0].datatype;
 
     if (datatype == _DATATYPE_FLOAT)
-        {
-            value = (double) img_percentile_float(ID_name, (float) p);
-        }
+    {
+        value = (double) img_percentile_float(ID_name, (float) p);
+    }
     if (datatype == _DATATYPE_DOUBLE)
-        {
-            value = img_percentile_double(ID_name, p);
-        }
+    {
+        value = img_percentile_double(ID_name, p);
+    }
 
     return value;
 }

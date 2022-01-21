@@ -128,98 +128,98 @@ errno_t printstatus(imageID ID)
     datatype = data.image[ID].md[0].datatype;
 
     if (datatype == _DATATYPE_UINT8)
-        {
-            printw("type:  UINT8             ");
-        }
+    {
+        printw("type:  UINT8             ");
+    }
     if (datatype == _DATATYPE_INT8)
-        {
-            printw("type:  INT8              ");
-        }
+    {
+        printw("type:  INT8              ");
+    }
 
     if (datatype == _DATATYPE_UINT16)
-        {
-            printw("type:  UINT16            ");
-        }
+    {
+        printw("type:  UINT16            ");
+    }
     if (datatype == _DATATYPE_INT16)
-        {
-            printw("type:  INT16             ");
-        }
+    {
+        printw("type:  INT16             ");
+    }
 
     if (datatype == _DATATYPE_UINT32)
-        {
-            printw("type:  UINT32            ");
-        }
+    {
+        printw("type:  UINT32            ");
+    }
     if (datatype == _DATATYPE_INT32)
-        {
-            printw("type:  INT32             ");
-        }
+    {
+        printw("type:  INT32             ");
+    }
 
     if (datatype == _DATATYPE_UINT64)
-        {
-            printw("type:  UINT64            ");
-        }
+    {
+        printw("type:  UINT64            ");
+    }
     if (datatype == _DATATYPE_INT64)
-        {
-            printw("type:  INT64             ");
-        }
+    {
+        printw("type:  INT64             ");
+    }
 
     if (datatype == _DATATYPE_FLOAT)
-        {
-            printw("type:  FLOAT              ");
-        }
+    {
+        printw("type:  FLOAT              ");
+    }
 
     if (datatype == _DATATYPE_DOUBLE)
-        {
-            printw("type:  DOUBLE             ");
-        }
+    {
+        printw("type:  DOUBLE             ");
+    }
 
     if (datatype == _DATATYPE_COMPLEX_FLOAT)
-        {
-            printw("type:  COMPLEX_FLOAT      ");
-        }
+    {
+        printw("type:  COMPLEX_FLOAT      ");
+    }
 
     if (datatype == _DATATYPE_COMPLEX_DOUBLE)
-        {
-            printw("type:  COMPLEX_DOUBLE     ");
-        }
+    {
+        printw("type:  COMPLEX_DOUBLE     ");
+    }
 
     sprintf(str, "[ %6ld", (long) data.image[ID].md[0].size[0]);
 
     for (j = 1; j < data.image[ID].md[0].naxis; j++)
-        {
-            {
-                int slen = snprintf(str1,
-                                    STRINGMAXLEN_DEFAULT,
-                                    "%s x %6ld",
-                                    str,
-                                    (long) data.image[ID].md[0].size[j]);
-                if (slen < 1)
-                    {
-                        PRINT_ERROR("snprintf wrote <1 char");
-                        abort(); // can't handle this error any other way
-                    }
-                if (slen >= STRINGMAXLEN_DEFAULT)
-                    {
-                        PRINT_ERROR("snprintf string truncation");
-                        abort(); // can't handle this error any other way
-                    }
-            }
-
-            strcpy(str, str1);
-        }
-
     {
-        int slen = snprintf(str1, STRINGMAXLEN_DEFAULT, "%s]", str);
-        if (slen < 1)
+        {
+            int slen = snprintf(str1,
+                                STRINGMAXLEN_DEFAULT,
+                                "%s x %6ld",
+                                str,
+                                (long) data.image[ID].md[0].size[j]);
+            if (slen < 1)
             {
                 PRINT_ERROR("snprintf wrote <1 char");
                 abort(); // can't handle this error any other way
             }
-        if (slen >= STRINGMAXLEN_DEFAULT)
+            if (slen >= STRINGMAXLEN_DEFAULT)
             {
                 PRINT_ERROR("snprintf string truncation");
                 abort(); // can't handle this error any other way
             }
+        }
+
+        strcpy(str, str1);
+    }
+
+    {
+        int slen = snprintf(str1, STRINGMAXLEN_DEFAULT, "%s]", str);
+        if (slen < 1)
+        {
+            PRINT_ERROR("snprintf wrote <1 char");
+            abort(); // can't handle this error any other way
+        }
+        if (slen >= STRINGMAXLEN_DEFAULT)
+        {
+            PRINT_ERROR("snprintf string truncation");
+            abort(); // can't handle this error any other way
+        }
     }
 
     strcpy(str, str1);
@@ -241,24 +241,24 @@ errno_t printstatus(imageID ID)
 
     printw("[%3ld sems ", data.image[ID].md[0].sem);
     for (s = 0; s < data.image[ID].md[0].sem; s++)
-        {
-            sem_getvalue(data.image[ID].semptr[s], &semval);
-            printw(" %6d ", semval);
-        }
+    {
+        sem_getvalue(data.image[ID].semptr[s], &semval);
+        printw(" %6d ", semval);
+    }
     printw("]\n");
 
     printw("[ WRITE   ", data.image[ID].md[0].sem);
     for (s = 0; s < data.image[ID].md[0].sem; s++)
-        {
-            printw(" %6d ", data.image[ID].semWritePID[s]);
-        }
+    {
+        printw(" %6d ", data.image[ID].semWritePID[s]);
+    }
     printw("]\n");
 
     printw("[ READ    ", data.image[ID].md[0].sem);
     for (s = 0; s < data.image[ID].md[0].sem; s++)
-        {
-            printw(" %6d ", data.image[ID].semReadPID[s]);
-        }
+    {
+        printw(" %6d ", data.image[ID].semReadPID[s]);
+    }
     printw("]\n");
 
     sem_getvalue(data.image[ID].semlog, &semval);
@@ -275,9 +275,9 @@ errno_t printstatus(imageID ID)
     imtotal = arith_image_total(data.image[ID].name);
 
     if (datatype == _DATATYPE_FLOAT)
-        {
-            printw("median %12g   ", arith_image_median(data.image[ID].name));
-        }
+    {
+        printw("median %12g   ", arith_image_median(data.image[ID].name));
+    }
 
     printw("average %12g    total = %12g\n",
            imtotal / data.image[ID].md[0].nelement,
@@ -285,328 +285,320 @@ errno_t printstatus(imageID ID)
 
     vcnt = (long *) malloc(sizeof(long) * NBhistopt);
     if (vcnt == NULL)
-        {
-            PRINT_ERROR("malloc returns NULL pointer");
-            abort();
-        }
+    {
+        PRINT_ERROR("malloc returns NULL pointer");
+        abort();
+    }
 
     if (datatype == _DATATYPE_FLOAT)
-        {
-            minPV = data.image[ID].array.F[0];
-            maxPV = minPV;
+    {
+        minPV = data.image[ID].array.F[0];
+        maxPV = minPV;
 
-            for (h = 0; h < NBhistopt; h++)
-                {
-                    vcnt[h] = 0;
-                }
-            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
-                {
-                    if (data.image[ID].array.F[ii] < minPV)
-                        {
-                            minPV = data.image[ID].array.F[ii];
-                        }
-                    if (data.image[ID].array.F[ii] > maxPV)
-                        {
-                            maxPV = data.image[ID].array.F[ii];
-                        }
-                    tmp = (1.0 * data.image[ID].array.F[ii] - average);
-                    RMS += tmp * tmp;
-                    h = (long) (1.0 * NBhistopt *
-                                ((float) (data.image[ID].array.F[ii] - minPV)) /
-                                (maxPV - minPV));
-                    if ((h > -1) && (h < NBhistopt))
-                        {
-                            vcnt[h]++;
-                        }
-                }
+        for (h = 0; h < NBhistopt; h++)
+        {
+            vcnt[h] = 0;
         }
+        for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+        {
+            if (data.image[ID].array.F[ii] < minPV)
+            {
+                minPV = data.image[ID].array.F[ii];
+            }
+            if (data.image[ID].array.F[ii] > maxPV)
+            {
+                maxPV = data.image[ID].array.F[ii];
+            }
+            tmp = (1.0 * data.image[ID].array.F[ii] - average);
+            RMS += tmp * tmp;
+            h = (long) (1.0 * NBhistopt *
+                        ((float) (data.image[ID].array.F[ii] - minPV)) /
+                        (maxPV - minPV));
+            if ((h > -1) && (h < NBhistopt))
+            {
+                vcnt[h]++;
+            }
+        }
+    }
 
     if (datatype == _DATATYPE_DOUBLE)
-        {
-            minPV = data.image[ID].array.D[0];
-            maxPV = minPV;
+    {
+        minPV = data.image[ID].array.D[0];
+        maxPV = minPV;
 
-            for (h = 0; h < NBhistopt; h++)
-                {
-                    vcnt[h] = 0;
-                }
-            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
-                {
-                    if (data.image[ID].array.D[ii] < minPV)
-                        {
-                            minPV = data.image[ID].array.D[ii];
-                        }
-                    if (data.image[ID].array.D[ii] > maxPV)
-                        {
-                            maxPV = data.image[ID].array.D[ii];
-                        }
-                    tmp = (1.0 * data.image[ID].array.D[ii] - average);
-                    RMS += tmp * tmp;
-                    h = (long) (1.0 * NBhistopt *
-                                ((float) (data.image[ID].array.D[ii] - minPV)) /
-                                (maxPV - minPV));
-                    if ((h > -1) && (h < NBhistopt))
-                        {
-                            vcnt[h]++;
-                        }
-                }
+        for (h = 0; h < NBhistopt; h++)
+        {
+            vcnt[h] = 0;
         }
+        for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+        {
+            if (data.image[ID].array.D[ii] < minPV)
+            {
+                minPV = data.image[ID].array.D[ii];
+            }
+            if (data.image[ID].array.D[ii] > maxPV)
+            {
+                maxPV = data.image[ID].array.D[ii];
+            }
+            tmp = (1.0 * data.image[ID].array.D[ii] - average);
+            RMS += tmp * tmp;
+            h = (long) (1.0 * NBhistopt *
+                        ((float) (data.image[ID].array.D[ii] - minPV)) /
+                        (maxPV - minPV));
+            if ((h > -1) && (h < NBhistopt))
+            {
+                vcnt[h]++;
+            }
+        }
+    }
 
     if (datatype == _DATATYPE_UINT8)
-        {
-            minPV = data.image[ID].array.UI8[0];
-            maxPV = minPV;
+    {
+        minPV = data.image[ID].array.UI8[0];
+        maxPV = minPV;
 
-            for (h = 0; h < NBhistopt; h++)
-                {
-                    vcnt[h] = 0;
-                }
-            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
-                {
-                    if (data.image[ID].array.UI8[ii] < minPV)
-                        {
-                            minPV = data.image[ID].array.UI8[ii];
-                        }
-                    if (data.image[ID].array.UI8[ii] > maxPV)
-                        {
-                            maxPV = data.image[ID].array.UI8[ii];
-                        }
-                    tmp = (1.0 * data.image[ID].array.UI8[ii] - average);
-                    RMS += tmp * tmp;
-                    h = (long) (1.0 * NBhistopt *
-                                ((float) (data.image[ID].array.UI8[ii] -
-                                          minPV)) /
-                                (maxPV - minPV));
-                    if ((h > -1) && (h < NBhistopt))
-                        {
-                            vcnt[h]++;
-                        }
-                }
+        for (h = 0; h < NBhistopt; h++)
+        {
+            vcnt[h] = 0;
         }
+        for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+        {
+            if (data.image[ID].array.UI8[ii] < minPV)
+            {
+                minPV = data.image[ID].array.UI8[ii];
+            }
+            if (data.image[ID].array.UI8[ii] > maxPV)
+            {
+                maxPV = data.image[ID].array.UI8[ii];
+            }
+            tmp = (1.0 * data.image[ID].array.UI8[ii] - average);
+            RMS += tmp * tmp;
+            h = (long) (1.0 * NBhistopt *
+                        ((float) (data.image[ID].array.UI8[ii] - minPV)) /
+                        (maxPV - minPV));
+            if ((h > -1) && (h < NBhistopt))
+            {
+                vcnt[h]++;
+            }
+        }
+    }
 
     if (datatype == _DATATYPE_UINT16)
-        {
-            minPV = data.image[ID].array.UI16[0];
-            maxPV = minPV;
+    {
+        minPV = data.image[ID].array.UI16[0];
+        maxPV = minPV;
 
-            for (h = 0; h < NBhistopt; h++)
-                {
-                    vcnt[h] = 0;
-                }
-            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
-                {
-                    if (data.image[ID].array.UI16[ii] < minPV)
-                        {
-                            minPV = data.image[ID].array.UI16[ii];
-                        }
-                    if (data.image[ID].array.UI16[ii] > maxPV)
-                        {
-                            maxPV = data.image[ID].array.UI16[ii];
-                        }
-                    tmp = (1.0 * data.image[ID].array.UI16[ii] - average);
-                    RMS += tmp * tmp;
-                    h = (long) (1.0 * NBhistopt *
-                                ((float) (data.image[ID].array.UI16[ii] -
-                                          minPV)) /
-                                (maxPV - minPV));
-                    if ((h > -1) && (h < NBhistopt))
-                        {
-                            vcnt[h]++;
-                        }
-                }
+        for (h = 0; h < NBhistopt; h++)
+        {
+            vcnt[h] = 0;
         }
+        for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+        {
+            if (data.image[ID].array.UI16[ii] < minPV)
+            {
+                minPV = data.image[ID].array.UI16[ii];
+            }
+            if (data.image[ID].array.UI16[ii] > maxPV)
+            {
+                maxPV = data.image[ID].array.UI16[ii];
+            }
+            tmp = (1.0 * data.image[ID].array.UI16[ii] - average);
+            RMS += tmp * tmp;
+            h = (long) (1.0 * NBhistopt *
+                        ((float) (data.image[ID].array.UI16[ii] - minPV)) /
+                        (maxPV - minPV));
+            if ((h > -1) && (h < NBhistopt))
+            {
+                vcnt[h]++;
+            }
+        }
+    }
 
     if (datatype == _DATATYPE_UINT32)
-        {
-            minPV = data.image[ID].array.UI32[0];
-            maxPV = minPV;
+    {
+        minPV = data.image[ID].array.UI32[0];
+        maxPV = minPV;
 
-            for (h = 0; h < NBhistopt; h++)
-                {
-                    vcnt[h] = 0;
-                }
-            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
-                {
-                    if (data.image[ID].array.UI32[ii] < minPV)
-                        {
-                            minPV = data.image[ID].array.UI32[ii];
-                        }
-                    if (data.image[ID].array.UI32[ii] > maxPV)
-                        {
-                            maxPV = data.image[ID].array.UI32[ii];
-                        }
-                    tmp = (1.0 * data.image[ID].array.UI32[ii] - average);
-                    RMS += tmp * tmp;
-                    h = (long) (1.0 * NBhistopt *
-                                ((float) (data.image[ID].array.UI32[ii] -
-                                          minPV)) /
-                                (maxPV - minPV));
-                    if ((h > -1) && (h < NBhistopt))
-                        {
-                            vcnt[h]++;
-                        }
-                }
+        for (h = 0; h < NBhistopt; h++)
+        {
+            vcnt[h] = 0;
         }
+        for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+        {
+            if (data.image[ID].array.UI32[ii] < minPV)
+            {
+                minPV = data.image[ID].array.UI32[ii];
+            }
+            if (data.image[ID].array.UI32[ii] > maxPV)
+            {
+                maxPV = data.image[ID].array.UI32[ii];
+            }
+            tmp = (1.0 * data.image[ID].array.UI32[ii] - average);
+            RMS += tmp * tmp;
+            h = (long) (1.0 * NBhistopt *
+                        ((float) (data.image[ID].array.UI32[ii] - minPV)) /
+                        (maxPV - minPV));
+            if ((h > -1) && (h < NBhistopt))
+            {
+                vcnt[h]++;
+            }
+        }
+    }
 
     if (datatype == _DATATYPE_UINT64)
-        {
-            minPV = data.image[ID].array.UI64[0];
-            maxPV = minPV;
+    {
+        minPV = data.image[ID].array.UI64[0];
+        maxPV = minPV;
 
-            for (h = 0; h < NBhistopt; h++)
-                {
-                    vcnt[h] = 0;
-                }
-            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
-                {
-                    if (data.image[ID].array.UI64[ii] < minPV)
-                        {
-                            minPV = data.image[ID].array.UI64[ii];
-                        }
-                    if (data.image[ID].array.UI64[ii] > maxPV)
-                        {
-                            maxPV = data.image[ID].array.UI64[ii];
-                        }
-                    tmp = (1.0 * data.image[ID].array.UI64[ii] - average);
-                    RMS += tmp * tmp;
-                    h = (long) (1.0 * NBhistopt *
-                                ((float) (data.image[ID].array.UI64[ii] -
-                                          minPV)) /
-                                (maxPV - minPV));
-                    if ((h > -1) && (h < NBhistopt))
-                        {
-                            vcnt[h]++;
-                        }
-                }
+        for (h = 0; h < NBhistopt; h++)
+        {
+            vcnt[h] = 0;
         }
+        for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+        {
+            if (data.image[ID].array.UI64[ii] < minPV)
+            {
+                minPV = data.image[ID].array.UI64[ii];
+            }
+            if (data.image[ID].array.UI64[ii] > maxPV)
+            {
+                maxPV = data.image[ID].array.UI64[ii];
+            }
+            tmp = (1.0 * data.image[ID].array.UI64[ii] - average);
+            RMS += tmp * tmp;
+            h = (long) (1.0 * NBhistopt *
+                        ((float) (data.image[ID].array.UI64[ii] - minPV)) /
+                        (maxPV - minPV));
+            if ((h > -1) && (h < NBhistopt))
+            {
+                vcnt[h]++;
+            }
+        }
+    }
 
     if (datatype == _DATATYPE_INT8)
-        {
-            minPV = data.image[ID].array.SI8[0];
-            maxPV = minPV;
+    {
+        minPV = data.image[ID].array.SI8[0];
+        maxPV = minPV;
 
-            for (h = 0; h < NBhistopt; h++)
-                {
-                    vcnt[h] = 0;
-                }
-            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
-                {
-                    if (data.image[ID].array.SI8[ii] < minPV)
-                        {
-                            minPV = data.image[ID].array.SI8[ii];
-                        }
-                    if (data.image[ID].array.SI8[ii] > maxPV)
-                        {
-                            maxPV = data.image[ID].array.SI8[ii];
-                        }
-                    tmp = (1.0 * data.image[ID].array.SI8[ii] - average);
-                    RMS += tmp * tmp;
-                    h = (long) (1.0 * NBhistopt *
-                                ((float) (data.image[ID].array.SI8[ii] -
-                                          minPV)) /
-                                (maxPV - minPV));
-                    if ((h > -1) && (h < NBhistopt))
-                        {
-                            vcnt[h]++;
-                        }
-                }
+        for (h = 0; h < NBhistopt; h++)
+        {
+            vcnt[h] = 0;
         }
+        for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+        {
+            if (data.image[ID].array.SI8[ii] < minPV)
+            {
+                minPV = data.image[ID].array.SI8[ii];
+            }
+            if (data.image[ID].array.SI8[ii] > maxPV)
+            {
+                maxPV = data.image[ID].array.SI8[ii];
+            }
+            tmp = (1.0 * data.image[ID].array.SI8[ii] - average);
+            RMS += tmp * tmp;
+            h = (long) (1.0 * NBhistopt *
+                        ((float) (data.image[ID].array.SI8[ii] - minPV)) /
+                        (maxPV - minPV));
+            if ((h > -1) && (h < NBhistopt))
+            {
+                vcnt[h]++;
+            }
+        }
+    }
 
     if (datatype == _DATATYPE_INT16)
-        {
-            minPV = data.image[ID].array.SI16[0];
-            maxPV = minPV;
+    {
+        minPV = data.image[ID].array.SI16[0];
+        maxPV = minPV;
 
-            for (h = 0; h < NBhistopt; h++)
-                {
-                    vcnt[h] = 0;
-                }
-            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
-                {
-                    if (data.image[ID].array.SI16[ii] < minPV)
-                        {
-                            minPV = data.image[ID].array.SI16[ii];
-                        }
-                    if (data.image[ID].array.SI16[ii] > maxPV)
-                        {
-                            maxPV = data.image[ID].array.SI16[ii];
-                        }
-                    tmp = (1.0 * data.image[ID].array.SI16[ii] - average);
-                    RMS += tmp * tmp;
-                    h = (long) (1.0 * NBhistopt *
-                                ((float) (data.image[ID].array.SI16[ii] -
-                                          minPV)) /
-                                (maxPV - minPV));
-                    if ((h > -1) && (h < NBhistopt))
-                        {
-                            vcnt[h]++;
-                        }
-                }
+        for (h = 0; h < NBhistopt; h++)
+        {
+            vcnt[h] = 0;
         }
+        for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+        {
+            if (data.image[ID].array.SI16[ii] < minPV)
+            {
+                minPV = data.image[ID].array.SI16[ii];
+            }
+            if (data.image[ID].array.SI16[ii] > maxPV)
+            {
+                maxPV = data.image[ID].array.SI16[ii];
+            }
+            tmp = (1.0 * data.image[ID].array.SI16[ii] - average);
+            RMS += tmp * tmp;
+            h = (long) (1.0 * NBhistopt *
+                        ((float) (data.image[ID].array.SI16[ii] - minPV)) /
+                        (maxPV - minPV));
+            if ((h > -1) && (h < NBhistopt))
+            {
+                vcnt[h]++;
+            }
+        }
+    }
 
     if (datatype == _DATATYPE_INT32)
-        {
-            minPV = data.image[ID].array.SI32[0];
-            maxPV = minPV;
+    {
+        minPV = data.image[ID].array.SI32[0];
+        maxPV = minPV;
 
-            for (h = 0; h < NBhistopt; h++)
-                {
-                    vcnt[h] = 0;
-                }
-            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
-                {
-                    if (data.image[ID].array.SI32[ii] < minPV)
-                        {
-                            minPV = data.image[ID].array.SI32[ii];
-                        }
-                    if (data.image[ID].array.SI32[ii] > maxPV)
-                        {
-                            maxPV = data.image[ID].array.SI32[ii];
-                        }
-                    tmp = (1.0 * data.image[ID].array.SI32[ii] - average);
-                    RMS += tmp * tmp;
-                    h = (long) (1.0 * NBhistopt *
-                                ((float) (data.image[ID].array.SI32[ii] -
-                                          minPV)) /
-                                (maxPV - minPV));
-                    if ((h > -1) && (h < NBhistopt))
-                        {
-                            vcnt[h]++;
-                        }
-                }
+        for (h = 0; h < NBhistopt; h++)
+        {
+            vcnt[h] = 0;
         }
+        for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+        {
+            if (data.image[ID].array.SI32[ii] < minPV)
+            {
+                minPV = data.image[ID].array.SI32[ii];
+            }
+            if (data.image[ID].array.SI32[ii] > maxPV)
+            {
+                maxPV = data.image[ID].array.SI32[ii];
+            }
+            tmp = (1.0 * data.image[ID].array.SI32[ii] - average);
+            RMS += tmp * tmp;
+            h = (long) (1.0 * NBhistopt *
+                        ((float) (data.image[ID].array.SI32[ii] - minPV)) /
+                        (maxPV - minPV));
+            if ((h > -1) && (h < NBhistopt))
+            {
+                vcnt[h]++;
+            }
+        }
+    }
 
     if (datatype == _DATATYPE_INT64)
-        {
-            minPV = data.image[ID].array.SI64[0];
-            maxPV = minPV;
+    {
+        minPV = data.image[ID].array.SI64[0];
+        maxPV = minPV;
 
-            for (h = 0; h < NBhistopt; h++)
-                {
-                    vcnt[h] = 0;
-                }
-            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
-                {
-                    if (data.image[ID].array.SI64[ii] < minPV)
-                        {
-                            minPV = data.image[ID].array.SI64[ii];
-                        }
-                    if (data.image[ID].array.SI64[ii] > maxPV)
-                        {
-                            maxPV = data.image[ID].array.SI64[ii];
-                        }
-                    tmp = (1.0 * data.image[ID].array.SI64[ii] - average);
-                    RMS += tmp * tmp;
-                    h = (long) (1.0 * NBhistopt *
-                                ((float) (data.image[ID].array.SI64[ii] -
-                                          minPV)) /
-                                (maxPV - minPV));
-                    if ((h > -1) && (h < NBhistopt))
-                        {
-                            vcnt[h]++;
-                        }
-                }
+        for (h = 0; h < NBhistopt; h++)
+        {
+            vcnt[h] = 0;
         }
+        for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+        {
+            if (data.image[ID].array.SI64[ii] < minPV)
+            {
+                minPV = data.image[ID].array.SI64[ii];
+            }
+            if (data.image[ID].array.SI64[ii] > maxPV)
+            {
+                maxPV = data.image[ID].array.SI64[ii];
+            }
+            tmp = (1.0 * data.image[ID].array.SI64[ii] - average);
+            RMS += tmp * tmp;
+            h = (long) (1.0 * NBhistopt *
+                        ((float) (data.image[ID].array.SI64[ii] - minPV)) /
+                        (maxPV - minPV));
+            if ((h > -1) && (h < NBhistopt))
+            {
+                vcnt[h]++;
+            }
+        }
+    }
 
     RMS   = sqrt(RMS / data.image[ID].md[0].nelement);
     RMS01 = 0.9 * RMS01 + 0.1 * RMS;
@@ -617,171 +609,130 @@ errno_t printstatus(imageID ID)
     printw("min - max   :   %12.6e - %12.6e\n", minPV, maxPV);
 
     if (data.image[ID].md[0].nelement > 25)
+    {
+        vcntmax = 0;
+        for (h = 0; h < NBhistopt; h++)
+            if (vcnt[h] > vcntmax)
+            {
+                vcntmax = vcnt[h];
+            }
+
+        for (h = 0; h < NBhistopt; h++)
         {
-            vcntmax = 0;
-            for (h = 0; h < NBhistopt; h++)
-                if (vcnt[h] > vcntmax)
-                    {
-                        vcntmax = vcnt[h];
-                    }
+            customcolor = 1;
+            if (h == NBhistopt - 1)
+            {
+                customcolor = 2;
+            }
+            sprintf(line1,
+                    "[%12.4e - %12.4e] %7ld",
+                    (minPV + 1.0 * (maxPV - minPV) * h / NBhistopt),
+                    (minPV + 1.0 * (maxPV - minPV) * (h + 1) / NBhistopt),
+                    vcnt[h]);
 
-            for (h = 0; h < NBhistopt; h++)
-                {
-                    customcolor = 1;
-                    if (h == NBhistopt - 1)
-                        {
-                            customcolor = 2;
-                        }
-                    sprintf(
-                        line1,
-                        "[%12.4e - %12.4e] %7ld",
-                        (minPV + 1.0 * (maxPV - minPV) * h / NBhistopt),
-                        (minPV + 1.0 * (maxPV - minPV) * (h + 1) / NBhistopt),
-                        vcnt[h]);
+            printw("%s",
+                   line1); //(minPV + 1.0*(maxPV-minPV)*h/NBhistopt), (minPV
+            //+ 1.0*(maxPV-minPV)*(h+1)/NBhistopt), vcnt[h]);
+            attron(COLOR_PAIR(customcolor));
 
-                    printw(
-                        "%s",
-                        line1); //(minPV + 1.0*(maxPV-minPV)*h/NBhistopt), (minPV
-                    //+ 1.0*(maxPV-minPV)*(h+1)/NBhistopt), vcnt[h]);
-                    attron(COLOR_PAIR(customcolor));
-
-                    cnt = 0;
-                    i   = 0;
-                    while ((cnt < infoscreen_wcol - strlen(line1) - 1) &&
-                           (i < vcnt[h]))
-                        {
-                            printw(" ");
-                            i += (long) (vcntmax /
-                                         (infoscreen_wcol - strlen(line1))) +
-                                 1;
-                            cnt++;
-                        }
-                    attroff(COLOR_PAIR(customcolor));
-                    printw("\n");
-                }
+            cnt = 0;
+            i   = 0;
+            while ((cnt < infoscreen_wcol - strlen(line1) - 1) && (i < vcnt[h]))
+            {
+                printw(" ");
+                i += (long) (vcntmax / (infoscreen_wcol - strlen(line1))) + 1;
+                cnt++;
+            }
+            attroff(COLOR_PAIR(customcolor));
+            printw("\n");
         }
+    }
     else
+    {
+        if (data.image[ID].md[0].datatype == _DATATYPE_FLOAT)
         {
-            if (data.image[ID].md[0].datatype == _DATATYPE_FLOAT)
-                {
-                    for (unsigned long ii = 0;
-                         ii < data.image[ID].md[0].nelement;
-                         ii++)
-                        {
-                            printw("%3ld  %f\n",
-                                   ii,
-                                   data.image[ID].array.F[ii]);
-                        }
-                }
-
-            if (data.image[ID].md[0].datatype == _DATATYPE_DOUBLE)
-                {
-                    for (unsigned long ii = 0;
-                         ii < data.image[ID].md[0].nelement;
-                         ii++)
-                        {
-                            printw("%3ld  %f\n",
-                                   ii,
-                                   (float) data.image[ID].array.D[ii]);
-                        }
-                }
-
-            if (data.image[ID].md[0].datatype == _DATATYPE_UINT8)
-                {
-                    for (unsigned long ii = 0;
-                         ii < data.image[ID].md[0].nelement;
-                         ii++)
-                        {
-                            printw("%3ld  %5u\n",
-                                   ii,
-                                   data.image[ID].array.UI8[ii]);
-                        }
-                }
-
-            if (data.image[ID].md[0].datatype == _DATATYPE_UINT16)
-                {
-                    for (unsigned long ii = 0;
-                         ii < data.image[ID].md[0].nelement;
-                         ii++)
-                        {
-                            printw("%3ld  %5u\n",
-                                   ii,
-                                   data.image[ID].array.UI16[ii]);
-                        }
-                }
-
-            if (data.image[ID].md[0].datatype == _DATATYPE_UINT32)
-                {
-                    for (unsigned long ii = 0;
-                         ii < data.image[ID].md[0].nelement;
-                         ii++)
-                        {
-                            printw("%3ld  %5lu\n",
-                                   ii,
-                                   data.image[ID].array.UI32[ii]);
-                        }
-                }
-
-            if (data.image[ID].md[0].datatype == _DATATYPE_UINT64)
-                {
-                    for (unsigned long ii = 0;
-                         ii < data.image[ID].md[0].nelement;
-                         ii++)
-                        {
-                            printw("%3ld  %5lu\n",
-                                   ii,
-                                   data.image[ID].array.UI64[ii]);
-                        }
-                }
-
-            if (data.image[ID].md[0].datatype == _DATATYPE_INT8)
-                {
-                    for (unsigned long ii = 0;
-                         ii < data.image[ID].md[0].nelement;
-                         ii++)
-                        {
-                            printw("%3ld  %5d\n",
-                                   ii,
-                                   data.image[ID].array.SI8[ii]);
-                        }
-                }
-
-            if (data.image[ID].md[0].datatype == _DATATYPE_INT16)
-                {
-                    for (unsigned long ii = 0;
-                         ii < data.image[ID].md[0].nelement;
-                         ii++)
-                        {
-                            printw("%3ld  %5d\n",
-                                   ii,
-                                   data.image[ID].array.SI16[ii]);
-                        }
-                }
-
-            if (data.image[ID].md[0].datatype == _DATATYPE_INT32)
-                {
-                    for (unsigned long ii = 0;
-                         ii < data.image[ID].md[0].nelement;
-                         ii++)
-                        {
-                            printw("%3ld  %5ld\n",
-                                   ii,
-                                   (long) data.image[ID].array.SI32[ii]);
-                        }
-                }
-
-            if (data.image[ID].md[0].datatype == _DATATYPE_INT64)
-                {
-                    for (unsigned long ii = 0;
-                         ii < data.image[ID].md[0].nelement;
-                         ii++)
-                        {
-                            printw("%3ld  %5ld\n",
-                                   ii,
-                                   (long) data.image[ID].array.SI64[ii]);
-                        }
-                }
+            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+            {
+                printw("%3ld  %f\n", ii, data.image[ID].array.F[ii]);
+            }
         }
+
+        if (data.image[ID].md[0].datatype == _DATATYPE_DOUBLE)
+        {
+            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+            {
+                printw("%3ld  %f\n", ii, (float) data.image[ID].array.D[ii]);
+            }
+        }
+
+        if (data.image[ID].md[0].datatype == _DATATYPE_UINT8)
+        {
+            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+            {
+                printw("%3ld  %5u\n", ii, data.image[ID].array.UI8[ii]);
+            }
+        }
+
+        if (data.image[ID].md[0].datatype == _DATATYPE_UINT16)
+        {
+            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+            {
+                printw("%3ld  %5u\n", ii, data.image[ID].array.UI16[ii]);
+            }
+        }
+
+        if (data.image[ID].md[0].datatype == _DATATYPE_UINT32)
+        {
+            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+            {
+                printw("%3ld  %5lu\n", ii, data.image[ID].array.UI32[ii]);
+            }
+        }
+
+        if (data.image[ID].md[0].datatype == _DATATYPE_UINT64)
+        {
+            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+            {
+                printw("%3ld  %5lu\n", ii, data.image[ID].array.UI64[ii]);
+            }
+        }
+
+        if (data.image[ID].md[0].datatype == _DATATYPE_INT8)
+        {
+            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+            {
+                printw("%3ld  %5d\n", ii, data.image[ID].array.SI8[ii]);
+            }
+        }
+
+        if (data.image[ID].md[0].datatype == _DATATYPE_INT16)
+        {
+            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+            {
+                printw("%3ld  %5d\n", ii, data.image[ID].array.SI16[ii]);
+            }
+        }
+
+        if (data.image[ID].md[0].datatype == _DATATYPE_INT32)
+        {
+            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+            {
+                printw("%3ld  %5ld\n",
+                       ii,
+                       (long) data.image[ID].array.SI32[ii]);
+            }
+        }
+
+        if (data.image[ID].md[0].datatype == _DATATYPE_INT64)
+        {
+            for (unsigned long ii = 0; ii < data.image[ID].md[0].nelement; ii++)
+            {
+                printw("%3ld  %5ld\n",
+                       ii,
+                       (long) data.image[ID].array.SI64[ii]);
+            }
+        }
+    }
 
     free(vcnt);
 
@@ -807,22 +758,22 @@ errno_t info_image_monitor(const char *ID_name, double frequ)
 
     ID = image_ID(ID_name);
     if (ID == -1)
-        {
-            printf("Image %s not found in memory\n\n", ID_name);
-            fflush(stdout);
+    {
+        printf("Image %s not found in memory\n\n", ID_name);
+        fflush(stdout);
 
-            return RETURN_SUCCESS;
-        }
+        return RETURN_SUCCESS;
+    }
 
 
     npix = data.image[ID].md[0].nelement;
 
     /*  Initialize ncurses  */
     if (initscr() == NULL)
-        {
-            fprintf(stderr, "Error initialising ncurses.\n");
-            exit(EXIT_FAILURE);
-        }
+    {
+        fprintf(stderr, "Error initialising ncurses.\n");
+        exit(EXIT_FAILURE);
+    }
     getmaxyx(stdscr,
              infoscreen_wrow,
              infoscreen_wcol); /* get the number of rows and columns */
@@ -837,9 +788,9 @@ errno_t info_image_monitor(const char *ID_name, double frequ)
 
     NBpix = npix;
     if (NBpix > infoscreen_wrow)
-        {
-            NBpix = infoscreen_wrow - 4;
-        }
+    {
+        NBpix = infoscreen_wrow - 4;
+    }
 
     start_color();
     init_pair(1, COLOR_BLACK, COLOR_WHITE);
@@ -859,120 +810,118 @@ errno_t info_image_monitor(const char *ID_name, double frequ)
     int NBpart = 4;
 
     while (loopOK == 1)
+    {
+        usleep((long) (1000000.0 / frequ));
+        int ch = getch();
+
+        if (freeze == 0)
         {
-            usleep((long) (1000000.0 / frequ));
-            int ch = getch();
-
-            if (freeze == 0)
-                {
-                    attron(A_BOLD);
-                    sprintf(monstring,
-                            "Mode %d   PRESS x TO STOP MONITOR",
-                            MonMode);
-                    print_header(monstring, '-');
-                    attroff(A_BOLD);
-                }
-
-            switch (ch)
-                {
-                case 'f':
-                    if (freeze == 0)
-                        {
-                            freeze = 1;
-                        }
-                    else
-                        {
-                            freeze = 0;
-                        }
-                    break;
-
-                case 'x':
-                    loopOK = 0;
-                    break;
-
-                case 's':
-                    MonMode = 0; // summary
-                    break;
-
-                case '0':
-                    MonMode = 1; // Sem timing
-                    sem     = 0;
-                    break;
-
-                case '1':
-                    MonMode = 1; // Sem timing
-                    sem     = 1;
-                    break;
-
-                case '2':
-                    MonMode = 1; // Sem timing
-                    sem     = 2;
-                    break;
-
-                case '+':
-                    if (MonMode == 1)
-                        {
-                            NBtsamples *= 2;
-                        }
-                    break;
-
-                case '-':
-                    if (MonMode == 1)
-                        {
-                            NBtsamples /= 2;
-                        }
-                    break;
-
-                case KEY_UP:
-                    if (MonMode == 1)
-                        {
-                            NBpart++;
-                            part = -1;
-                        }
-                    break;
-
-                case KEY_DOWN:
-                    if (MonMode == 1)
-                        {
-                            NBpart--;
-                            part = -1;
-                        }
-                    break;
-                }
-
-            if (freeze == 0)
-                {
-                    if (MonMode == 0)
-                        {
-                            clear();
-                            printstatus(ID);
-                        }
-
-                    if (MonMode == 1)
-                        {
-                            clear();
-
-                            if (part > NBpart - 1)
-                                {
-                                    part = 0;
-                                }
-                            info_image_streamtiming_stats(ID_name,
-                                                          sem,
-                                                          NBtsamples,
-                                                          0,
-                                                          1); // part, NBpart);
-                            part++;
-                            if (part > NBpart - 1)
-                                {
-                                    part = 0;
-                                }
-                        }
-
-                    refresh();
-
-                    cnt++;
-                }
+            attron(A_BOLD);
+            sprintf(monstring, "Mode %d   PRESS x TO STOP MONITOR", MonMode);
+            print_header(monstring, '-');
+            attroff(A_BOLD);
         }
+
+        switch (ch)
+        {
+        case 'f':
+            if (freeze == 0)
+            {
+                freeze = 1;
+            }
+            else
+            {
+                freeze = 0;
+            }
+            break;
+
+        case 'x':
+            loopOK = 0;
+            break;
+
+        case 's':
+            MonMode = 0; // summary
+            break;
+
+        case '0':
+            MonMode = 1; // Sem timing
+            sem     = 0;
+            break;
+
+        case '1':
+            MonMode = 1; // Sem timing
+            sem     = 1;
+            break;
+
+        case '2':
+            MonMode = 1; // Sem timing
+            sem     = 2;
+            break;
+
+        case '+':
+            if (MonMode == 1)
+            {
+                NBtsamples *= 2;
+            }
+            break;
+
+        case '-':
+            if (MonMode == 1)
+            {
+                NBtsamples /= 2;
+            }
+            break;
+
+        case KEY_UP:
+            if (MonMode == 1)
+            {
+                NBpart++;
+                part = -1;
+            }
+            break;
+
+        case KEY_DOWN:
+            if (MonMode == 1)
+            {
+                NBpart--;
+                part = -1;
+            }
+            break;
+        }
+
+        if (freeze == 0)
+        {
+            if (MonMode == 0)
+            {
+                clear();
+                printstatus(ID);
+            }
+
+            if (MonMode == 1)
+            {
+                clear();
+
+                if (part > NBpart - 1)
+                {
+                    part = 0;
+                }
+                info_image_streamtiming_stats(ID_name,
+                                              sem,
+                                              NBtsamples,
+                                              0,
+                                              1); // part, NBpart);
+                part++;
+                if (part > NBpart - 1)
+                {
+                    part = 0;
+                }
+            }
+
+            refresh();
+
+            cnt++;
+        }
+    }
     endwin();
 
     return RETURN_SUCCESS;
