@@ -1,9 +1,11 @@
 /** @file percentile.c
  */
 
+#include "CommandLineInterface/CLIcore.h"
+
 #include "COREMOD_memory/COREMOD_memory.h"
 #include "COREMOD_tools/COREMOD_tools.h"
-#include "CommandLineInterface/CLIcore.h"
+
 
 float img_percentile_float(const char *ID_name, float p)
 {
