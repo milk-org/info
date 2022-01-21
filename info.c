@@ -9,10 +9,9 @@
  */
 
 #define MODULE_SHORTNAME_DEFAULT "info"
-#define MODULE_DESCRIPTION "Image information and statistics"
+#define MODULE_DESCRIPTION       "Image information and statistics"
 
 #include "CommandLineInterface/CLIcore.h"
-
 #include "cubeMatchMatrix.h"
 #include "cubestats.h"
 #include "image_stats.h"
@@ -26,7 +25,6 @@ INIT_MODULE_LIB(info)
 
 static errno_t init_module_CLI()
 {
-
     cubeMatchMatrix_addCLIcmd();
     cubestats_addCLIcmd();
 
@@ -92,7 +90,8 @@ errno_t img_nbpix_flux(
     for(unsigned long jj = 0; jj < naxes[1]; jj++)
         for(unsigned long ii = 0; ii < naxes[0]; ii++)
         {
-            array[jj * naxes[0] + ii] = data.image[ID].array.F[jj * naxes[0] + ii];
+            array[jj * naxes[0] + ii] = data.image[ID].array.F[jj * naxes[0] +
+ii];
         }
 
     quick_sort_double(array, nelements);
@@ -131,7 +130,8 @@ errno_t img_histoc_float(
     for(unsigned long jj = 0; jj < naxes[1]; jj++)
         for(unsigned long ii = 0; ii < naxes[0]; ii++)
         {
-            array[jj * naxes[0] + ii] = data.image[ID].array.F[jj * naxes[0] + ii];
+            array[jj * naxes[0] + ii] = data.image[ID].array.F[jj * naxes[0] +
+ii];
         }
 
     quick_sort_float(array, nelements);
@@ -181,7 +181,8 @@ errno_t img_histoc_double(
     for(unsigned long jj = 0; jj < naxes[1]; jj++)
         for(unsigned long ii = 0; ii < naxes[0]; ii++)
         {
-            array[jj * naxes[0] + ii] = data.image[ID].array.F[jj * naxes[0] + ii];
+            array[jj * naxes[0] + ii] = data.image[ID].array.F[jj * naxes[0] +
+ii];
         }
 
     quick_sort_double(array, nelements);
@@ -281,8 +282,8 @@ double rms_dev(const char *ID_name)
     for(unsigned long jj = 0; jj < naxes[1]; jj++)
         for(unsigned long ii = 0; ii < naxes[0]; ii++)
         {
-            ssquare = ssquare + (data.image[ID].array.F[jj * naxes[0] + ii] - constant) *
-                      (data.image[ID].array.F[jj * naxes[0] + ii] - constant);
+            ssquare = ssquare + (data.image[ID].array.F[jj * naxes[0] + ii] -
+constant) * (data.image[ID].array.F[jj * naxes[0] + ii] - constant);
         }
     rms = sqrt(ssquare / naxes[1] / naxes[0]);
     return(rms);
@@ -374,7 +375,8 @@ errno_t printpix(
             for(unsigned long jj = 0; jj < naxes[1]; jj += jjstep)
             {
                 //  fprintf(fp,"%f ",data.image[ID].array.F[jj*naxes[0]+ii]);
-                fprintf(fp, "%ld %ld %g\n", ii, jj, data.image[ID].array.F[jj * naxes[0] + ii]);
+                fprintf(fp, "%ld %ld %g\n", ii, jj, data.image[ID].array.F[jj *
+naxes[0] + ii]);
             }
             fprintf(fp, "\n");
         }
@@ -390,7 +392,8 @@ errno_t printpix(
                 for(unsigned long kk = 0; kk < naxes[2]; kk++)
                 {
                     fprintf(fp, "%ld %ld %ld %f\n", ii, jj, kk,
-                            data.image[ID].array.F[kk * naxes[1]*naxes[0] + jj * naxes[0] + ii]);
+                            data.image[ID].array.F[kk * naxes[1]*naxes[0] + jj
+* naxes[0] + ii]);
                 }
 
     }
@@ -435,16 +438,16 @@ double background_photon_noise(
     for(unsigned long jj = 0; jj < naxes[1]; jj++)
         for(unsigned long ii = 0; ii < naxes[0]; ii++)
         {
-            array[jj * naxes[0] + ii] = data.image[ID].array.F[jj * naxes[0] + ii];
+            array[jj * naxes[0] + ii] = data.image[ID].array.F[jj * naxes[0] +
+ii];
         }
 
     quick_sort_double(array, nelements);
 
 
     // calculation using F(-0.9*sig) and F(-1.3*sig)
-    value1 = array[(long)(0.184060125347 * naxes[1] * naxes[0])] - array[(long)(
-                 0.0968004845855 * naxes[1] * naxes[0])];
-    value1 /= (1.3 - 0.9);
+    value1 = array[(long)(0.184060125347 * naxes[1] * naxes[0])] -
+array[(long)( 0.0968004845855 * naxes[1] * naxes[0])]; value1 /= (1.3 - 0.9);
     printf("(-1.3 -0.9) %f\n", value1);
 
     // calculation using F(-0.6*sig) and F(-1.3*sig)
@@ -454,9 +457,8 @@ double background_photon_noise(
     printf("(-1.3 -0.6) %f\n", value2);
 
     // calculation using F(-0.3*sig) and F(-1.3*sig)
-    value3 = array[(long)(0.382088577811 * naxes[1] * naxes[0])] - array[(long)(
-                 0.0968004845855 * naxes[1] * naxes[0])];
-    value3 /= (1.3 - 0.3);
+    value3 = array[(long)(0.382088577811 * naxes[1] * naxes[0])] -
+array[(long)( 0.0968004845855 * naxes[1] * naxes[0])]; value3 /= (1.3 - 0.3);
     printf("(-1.3 -0.3) %f\n", value3);
 
     value = value3;
@@ -555,9 +557,9 @@ imageID full_structure_function(
                         {
                             v1 = data.image[ID].array.F[jj1 * naxes[0] + ii1];
                             v2 = data.image[ID].array.F[jj2 * naxes[0] + ii2];
-                            data.image[ID1].array.F[(jj2 - jj1)*naxes[0] + ii2 - ii1] += (v1 - v2) *
-                                    (v1 - v2);
-                            data.image[ID2].array.F[(jj2 - jj1)*naxes[0] + ii2 - ii1] += 1.0;
+                            data.image[ID1].array.F[(jj2 - jj1)*naxes[0] + ii2
+- ii1] += (v1 - v2) * (v1 - v2); data.image[ID2].array.F[(jj2 - jj1)*naxes[0] +
+ii2 - ii1] += 1.0;
                         }
             }
         }

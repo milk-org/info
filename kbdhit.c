@@ -10,8 +10,8 @@
 errno_t kbdhit(void)
 {
     struct termios oldt, newt;
-    int ch;
-    int oldf;
+    int            ch;
+    int            oldf;
 
     tcgetattr(STDIN_FILENO, &oldt);
     newt = oldt;
@@ -26,10 +26,10 @@ errno_t kbdhit(void)
     fcntl(STDIN_FILENO, F_SETFL, oldf);
 
     if (ch != EOF)
-    {
-        //     ungetc(ch, stdin);
-        return RETURN_FAILURE;
-    }
+        {
+            //     ungetc(ch, stdin);
+            return RETURN_FAILURE;
+        }
 
     return RETURN_SUCCESS;
 }

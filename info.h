@@ -27,7 +27,7 @@ errno_t img_nbpix_flux(
 );
 */
 
-//int img_histoc(const char *ID_name, const char *fname);
+// int img_histoc(const char *ID_name, const char *fname);
 
 /*
 errno_t make_histogram(
@@ -39,9 +39,9 @@ errno_t make_histogram(
 );
 */
 
-//double ssquare(const char *ID_name);
+// double ssquare(const char *ID_name);
 
-//double rms_dev(const char *ID_name);
+// double rms_dev(const char *ID_name);
 
 /*
 double img_min(const char *ID_name);
