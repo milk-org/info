@@ -23,8 +23,8 @@ static short unsigned int wrow, wcol;
 static long long       cntlast;
 static struct timespec tlast;
 
-extern int infoscreen_wcol;
-extern int infoscreen_wrow;
+//extern int infoscreen_wcol;
+//extern int infoscreen_wrow;
 
 // Local variables pointers
 static char   *instreamname;
@@ -644,10 +644,10 @@ errno_t printstatus(imageID ID)
 
             cnt = 0;
             i   = 0;
-            while ((cnt < infoscreen_wcol - strlen(line1) - 1) && (i < vcnt[h]))
+            while ((cnt < wcol - strlen(line1) - 1) && (i < vcnt[h]))
             {
                 printw(" ");
-                i += (long) (vcntmax / (infoscreen_wcol - strlen(line1))) + 1;
+                i += (long) (vcntmax / (wcol - strlen(line1))) + 1;
                 cnt++;
             }
             attroff(COLOR_PAIR(customcolor));
