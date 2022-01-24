@@ -3,8 +3,16 @@
  * @brief   image monitor
  */
 
+#define NCURSES_WIDECHAR 1
+
 #include <math.h>
 #include <ncurses.h>
+#include <curses.h>
+
+#include <stdio.h>
+#include <wchar.h>
+#include <wctype.h>
+#include <locale.h>
 
 #include "CommandLineInterface/CLIcore.h"
 
@@ -14,21 +22,24 @@
 #include "streamtiming_stats.h"
 #include "timediff.h"
 
+
 #include "TUItools.h"
 
 
+
+
+// screen size
 static short unsigned int wrow, wcol;
 
 
 static long long       cntlast;
 static struct timespec tlast;
 
-//extern int infoscreen_wcol;
-//extern int infoscreen_wrow;
+
 
 // Local variables pointers
-static char   *instreamname;
-static double *updatefrequency;
+static char  *instreamname;
+static float *updatefrequency;
 
 static CLICMDARGDEF farg[] = {{CLIARG_IMG,
                                ".insname",
@@ -37,7 +48,7 @@ static CLICMDARGDEF farg[] = {{CLIARG_IMG,
                                CLIARG_VISIBLE_DEFAULT,
                                (void **) &instreamname,
                                NULL},
-                              {CLIARG_FLOAT,
+                              {CLIARG_FLOAT32,
                                ".frequ",
                                "frequency [Hz]",
                                "3.0",
@@ -59,8 +70,8 @@ static errno_t help_function()
 
 
 
-errno_t info_image_monitor(const char *ID_name, double frequ);
-
+errno_t info_image_monitor(const char *ID_name, float frequ);
+errno_t printstatus(imageID ID);
 
 
 
@@ -68,22 +79,118 @@ static errno_t compute_function()
 {
     DEBUG_TRACE_FSTART();
 
-    INSERT_STD_PROCINFO_COMPUTEFUNC_START
 
-    //    printf("stream    : %s\n", instreamname);
-    //    printf("Frequency = %f\n", *updatefrequency);
+    INSERT_TUI_SETUP
 
-    info_image_monitor(instreamname, *updatefrequency);
+    // define screens
+    static int NBTUIscreen = 3;
+
+    TUIscreenarray[0].index = 1;
+    TUIscreenarray[0].keych = 'h';
+    strcpy(TUIscreenarray[0].name, "[h] Help");
+
+    TUIscreenarray[1].index = 2;
+    TUIscreenarray[1].keych = KEY_F(2);
+    strcpy(TUIscreenarray[1].name, "[F2] summary");
+
+    TUIscreenarray[2].index = 3;
+    TUIscreenarray[2].keych = KEY_F(3);
+    strcpy(TUIscreenarray[2].name, "[F3] timing");
+
+
+    INSERT_STD_PROCINFO_COMPUTEFUNC_INIT
+
+    double pinfotdelay = 1.0 * processinfo->triggerdelay.tv_sec +
+                         1.0e-9 * processinfo->triggerdelay.tv_nsec;
+    int diplaycntinterval = (int) ((1.0 / *updatefrequency) / pinfotdelay);
+    int dispcnt           = 0;
+
+    imageID ID        = image_ID(instreamname);
+    int     TUIscreen = 2;
+    int     sem       = -1;
+
+    INSERT_STD_PROCINFO_COMPUTEFUNC_LOOPSTART
+
+    INSTERT_TUI_KEYCONTROLS
+
+
+
+    if ((dispcnt == 0) && (TUIpause == 0))
+    {
+        erase();
+
+        INSERT_TUI_SCREEN_MENU
+        TUI_newline();
+
+
+        //TUI_printfw("Display frequency = %f Hz -> diplaycntinterval = %d\n", *updatefrequency, diplaycntinterval);
+        //TUI_printfw("[ %8ld ] input ch : %d %c\n", processinfo->loopcnt, (int) TUIinputkch, TUIinputkch);
+
+        if (TUIscreen == 1)
+        {
+            TUI_printfw("h / F2 / F3 : change screen\n");
+            TUI_printfw("x : exit\n");
+        }
+
+        if (TUIscreen == 2)
+        {
+            printstatus(ID);
+        }
+
+        if (TUIscreen == 3)
+        {
+            if (sem == -1)
+            {
+                int semdefault = 0;
+                sem =
+                    ImageStreamIO_getsemwaitindex(&data.image[ID], semdefault);
+            }
+            long  NBtsamples     = 1024;
+            float samplestimeout = 1.0;
+            TUI_printfw(
+                "Listening on semaphore %d, waiting for %ld frames or %.3f "
+                "sec\n",
+                sem,
+                NBtsamples,
+                samplestimeout);
+            info_image_streamtiming_stats(ID,
+                                          sem,
+                                          NBtsamples,
+                                          samplestimeout,
+                                          21);
+        }
+        else
+        {
+            sem = -1;
+        }
+
+        refresh();
+    }
+
+    dispcnt++;
+
+    if (dispcnt > diplaycntinterval)
+    {
+        dispcnt = 0;
+    }
+
+
 
     INSERT_STD_PROCINFO_COMPUTEFUNC_END
 
-    DEBUG_TRACEPOINT(" ");
+    endwin();
 
     DEBUG_TRACE_FEXIT();
     return RETURN_SUCCESS;
 }
 
+
+
+
 INSERT_STD_FPSCLIfunctions
+
+
+
 
     // Register function in CLI
     errno_t
@@ -99,12 +206,6 @@ INSERT_STD_FPSCLIfunctions
 
 errno_t printstatus(imageID ID)
 {
-    struct timespec tnow;
-    struct timespec tdiff;
-    double          tdiffv;
-    char            str[STRINGMAXLEN_DEFAULT];
-    char            str1[STRINGMAXLEN_DEFAULT];
-
     long          j;
     double        frequ;
     long          NBhistopt = 20;
@@ -120,8 +221,8 @@ errno_t printstatus(imageID ID)
     double average;
     double imtotal;
 
-    uint8_t datatype;
-    char    line1[200];
+
+    char line1[200];
 
     double tmp;
     double RMS = 0.0;
@@ -129,128 +230,68 @@ errno_t printstatus(imageID ID)
     double RMS01 = 0.0;
     long   vcntmax;
     int    semval;
-    long   s;
 
-    TUI_printfw("[ %3d x %3d ] ", wcol, wrow);
+    DEBUG_TRACEPOINT("window size %3d %3d", wcol, wrow);
 
-    TUI_printfw("%s  ", data.image[ID].name);
+    uint8_t datatype;
+    {
+        // Image name, type and size
+        char str[STRINGMAXLEN_DEFAULT];
+        char str1[STRINGMAXLEN_DEFAULT];
 
-    datatype = data.image[ID].md[0].datatype;
+        TUI_printfw("%s  ", data.image[ID].name);
+        datatype = data.image[ID].md[0].datatype;
+        sprintf(str,
+                "%s [ %6ld",
+                ImageStreamIO_typename(datatype),
+                (long) data.image[ID].md[0].size[0]);
 
-    if (datatype == _DATATYPE_UINT8)
-    {
-        TUI_printfw("type:  UINT8             ");
-    }
-    if (datatype == _DATATYPE_INT8)
-    {
-        TUI_printfw("type:  INT8              ");
-    }
-
-    if (datatype == _DATATYPE_UINT16)
-    {
-        TUI_printfw("type:  UINT16            ");
-    }
-    if (datatype == _DATATYPE_INT16)
-    {
-        TUI_printfw("type:  INT16             ");
-    }
-
-    if (datatype == _DATATYPE_UINT32)
-    {
-        TUI_printfw("type:  UINT32            ");
-    }
-    if (datatype == _DATATYPE_INT32)
-    {
-        TUI_printfw("type:  INT32             ");
-    }
-
-    if (datatype == _DATATYPE_UINT64)
-    {
-        TUI_printfw("type:  UINT64            ");
-    }
-    if (datatype == _DATATYPE_INT64)
-    {
-        TUI_printfw("type:  INT64             ");
-    }
-
-    if (datatype == _DATATYPE_FLOAT)
-    {
-        TUI_printfw("type:  FLOAT              ");
-    }
-
-    if (datatype == _DATATYPE_DOUBLE)
-    {
-        TUI_printfw("type:  DOUBLE             ");
-    }
-
-    if (datatype == _DATATYPE_COMPLEX_FLOAT)
-    {
-        TUI_printfw("type:  COMPLEX_FLOAT      ");
-    }
-
-    if (datatype == _DATATYPE_COMPLEX_DOUBLE)
-    {
-        TUI_printfw("type:  COMPLEX_DOUBLE     ");
-    }
-
-    sprintf(str, "[ %6ld", (long) data.image[ID].md[0].size[0]);
-
-    for (j = 1; j < data.image[ID].md[0].naxis; j++)
-    {
+        for (j = 1; j < data.image[ID].md[0].naxis; j++)
         {
-            int slen = snprintf(str1,
-                                STRINGMAXLEN_DEFAULT,
-                                "%s x %6ld",
-                                str,
-                                (long) data.image[ID].md[0].size[j]);
-            if (slen < 1)
-            {
-                PRINT_ERROR("snprintf wrote <1 char");
-                abort(); // can't handle this error any other way
-            }
-            if (slen >= STRINGMAXLEN_DEFAULT)
-            {
-                PRINT_ERROR("snprintf string truncation");
-                abort(); // can't handle this error any other way
-            }
+            WRITE_STRING(str1,
+                         "%s x %6ld",
+                         str,
+                         (long) data.image[ID].md[0].size[j]);
+
+            strcpy(str, str1);
         }
 
+        WRITE_STRING(str1, "%s]", str);
         strcpy(str, str1);
+
+        TUI_printfw("%-28s\n", str);
     }
 
-    {
-        int slen = snprintf(str1, STRINGMAXLEN_DEFAULT, "%s]", str);
-        if (slen < 1)
-        {
-            PRINT_ERROR("snprintf wrote <1 char");
-            abort(); // can't handle this error any other way
-        }
-        if (slen >= STRINGMAXLEN_DEFAULT)
-        {
-            PRINT_ERROR("snprintf string truncation");
-            abort(); // can't handle this error any other way
-        }
-    }
 
-    strcpy(str, str1);
 
-    TUI_printfw("%-28s\n", str);
-
-    clock_gettime(CLOCK_REALTIME, &tnow);
-    tdiff = info_time_diff(tlast, tnow);
-    clock_gettime(CLOCK_REALTIME, &tlast);
-
-    tdiffv  = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
-    frequ   = (data.image[ID].md[0].cnt0 - cntlast) / tdiffv;
-    cntlast = data.image[ID].md[0].cnt0;
 
     TUI_printfw("[write %d] ", data.image[ID].md[0].write);
     TUI_printfw("[status %2d] ", data.image[ID].md[0].status);
-    TUI_printfw("[cnt0 %8d] [%6.2f Hz] ", data.image[ID].md[0].cnt0, frequ);
-    TUI_printfw("[cnt1 %8d]\n", data.image[ID].md[0].cnt1);
+
+
+    {
+        // timing and counters
+
+        struct timespec tnow;
+        struct timespec tdiff;
+        double          tdiffv;
+
+        clock_gettime(CLOCK_REALTIME, &tnow);
+        tdiff = info_time_diff(tlast, tnow);
+        clock_gettime(CLOCK_REALTIME, &tlast);
+
+        tdiffv  = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
+        frequ   = (data.image[ID].md[0].cnt0 - cntlast) / tdiffv;
+        cntlast = data.image[ID].md[0].cnt0;
+
+        TUI_printfw("[cnt0 %8d] [%6.2f Hz] ", data.image[ID].md[0].cnt0, frequ);
+        TUI_printfw("[cnt1 %8d]\n", data.image[ID].md[0].cnt1);
+    }
+
+
 
     TUI_printfw("[%3ld sems ", data.image[ID].md[0].sem);
-    for (s = 0; s < data.image[ID].md[0].sem; s++)
+    for (int s = 0; s < data.image[ID].md[0].sem; s++)
     {
         sem_getvalue(data.image[ID].semptr[s], &semval);
         TUI_printfw(" %6d ", semval);
@@ -258,14 +299,14 @@ errno_t printstatus(imageID ID)
     TUI_printfw("]\n");
 
     TUI_printfw("[ WRITE   ", data.image[ID].md[0].sem);
-    for (s = 0; s < data.image[ID].md[0].sem; s++)
+    for (int s = 0; s < data.image[ID].md[0].sem; s++)
     {
         TUI_printfw(" %6d ", data.image[ID].semWritePID[s]);
     }
     TUI_printfw("]\n");
 
     TUI_printfw("[ READ    ", data.image[ID].md[0].sem);
-    for (s = 0; s < data.image[ID].md[0].sem; s++)
+    for (int s = 0; s < data.image[ID].md[0].sem; s++)
     {
         TUI_printfw(" %6d ", data.image[ID].semReadPID[s]);
     }
@@ -753,21 +794,13 @@ errno_t printstatus(imageID ID)
 }
 
 
-
-errno_t info_image_monitor(const char *ID_name, double frequ)
+/*
+errno_t info_image_monitor(const char *ID_name, float frequ)
 {
     imageID ID;
-    // long     mode = 0; // 0 for large image, 1 for small image
-    long NBpix;
-    long npix;
     int  sem;
-    long cnt;
-
     int  MonMode = 0;
-    char monstring[200];
 
-    // 0: image summary
-    // 1: timing info for sem
 
     ID = image_ID(ID_name);
     if (ID == -1)
@@ -778,61 +811,32 @@ errno_t info_image_monitor(const char *ID_name, double frequ)
         return RETURN_SUCCESS;
     }
 
-
-    npix = data.image[ID].md[0].nelement;
-
-
-
-
-    // default: use ncurses
-    TUI_set_screenprintmode(SCREENPRINT_NCURSES);
-
-    if (getenv("MILK_TUIPRINT_STDIO"))
-    {
-        // use stdio instead of ncurses
-        TUI_set_screenprintmode(SCREENPRINT_STDIO);
-    }
-
-    if (getenv("MILK_TUIPRINT_NONE"))
-    {
-        TUI_set_screenprintmode(SCREENPRINT_NONE);
-    }
-
-    TUI_init_terminal(&wrow, &wcol);
-
-
     int loopOK = 1;
     int freeze = 0;
-    int Xexit  = 0; // toggles to 1 when users types x
 
     long NBtsamples = 1024;
-    int  part       = 0;
-    int  NBpart     = 4;
+
+
+    DEBUG_TRACEPOINT("start display loop %d", loopOK);
 
     while (loopOK == 1)
     {
+        DEBUG_TRACEPOINT("sleep");
         usleep((long) (1000000.0 / frequ));
+
+        DEBUG_TRACEPOINT("Get key pressed");
         int ch = getch();
+        DEBUG_TRACEPOINT("Got key pressed : %d", ch);
+
+        DEBUG_TRACEPOINT("Get terminal size");
+        TUI_get_terminal_size(&wrow, &wcol);
 
 
-
-        if (freeze == 0)
-        {
-            //attron(A_BOLD);
-            sprintf(monstring, "Mode %d   PRESS x TO STOP MONITOR", MonMode);
-            //processtools__print_header(monstring, '-');
-            TUI_print_header(monstring, '-');
-            //attroff(A_BOLD);
-        }
-
-
-
-
+        DEBUG_TRACEPOINT("process input key");
         switch (ch)
         {
         case 'x': // Exit control screen
             loopOK = 0;
-            Xexit  = 1;
             break;
         case 's':
             MonMode = 0; // summary
@@ -867,23 +871,7 @@ errno_t info_image_monitor(const char *ID_name, double frequ)
             }
             break;
 
-        case KEY_UP:
-            if (MonMode == 1)
-            {
-                NBpart++;
-                part = -1;
-            }
-            break;
-
-        case KEY_DOWN:
-            if (MonMode == 1)
-            {
-                NBpart--;
-                part = -1;
-            }
-            break;
         }
-
 
 
 
@@ -891,8 +879,27 @@ errno_t info_image_monitor(const char *ID_name, double frequ)
         {
             erase();
 
+            int  stringmaxlen = 500;
+            char monstring[stringmaxlen];
 
-            //TUI_newline();
+            screenprint_setbold();
+
+            if (snprintf(monstring,
+                         stringmaxlen,
+                         "[%d x %d] [PID %d] STREAM MONITOR: PRESS (x) TO "
+                         "STOP, (h) FOR HELP [ %.2f Hz]",
+                         wrow,
+                         wcol,
+                         (int) getpid(),
+                         frequ
+                        ) < 0)
+            {
+                PRINT_ERROR("snprintf error");
+            }
+            TUI_print_header(monstring, '-');
+            screenprint_unsetbold();
+            TUI_newline();
+
 
             if (MonMode == 0)
             {
@@ -904,29 +911,15 @@ errno_t info_image_monitor(const char *ID_name, double frequ)
             {
                 //clear();
 
-                if (part > NBpart - 1)
-                {
-                    part = 0;
-                }
-                info_image_streamtiming_stats(ID_name,
+                info_image_streamtiming_stats(ID,
                                               sem,
                                               NBtsamples,
-                                              0,
-                                              1); // part, NBpart);
-                part++;
-                if (part > NBpart - 1)
-                {
-                    part = 0;
-                }
+                                              1.0,
+                                              10);
             }
-
-
-
             refresh();
         }
     }
-
-    endwin();
-
     return RETURN_SUCCESS;
 }
+*/
