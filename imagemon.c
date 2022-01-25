@@ -161,7 +161,7 @@ static errno_t compute_function()
                 sem,
                 NBtsamples,
                 samplestimeout);
-            TUI_printfw("%d  Press SPACE to reset buffer\n");
+            TUI_printfw("Press SPACE to reset buffer\n");
 
             info_image_streamtiming_stats(ID,
                                           sem,
