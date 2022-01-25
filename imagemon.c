@@ -109,11 +109,19 @@ static errno_t compute_function()
     int     TUIscreen = 2;
     int     sem       = -1;
 
+    int timingbuffinit = 0;
+
     INSERT_STD_PROCINFO_COMPUTEFUNC_LOOPSTART
 
     INSTERT_TUI_KEYCONTROLS
 
 
+    if (TUIinputkch == ' ')
+    {
+        TUI_printfw("BUFFER INIT\n");
+        // flush timing buffer
+        timingbuffinit = 1;
+    }
 
     if ((dispcnt == 0) && (TUIpause == 0))
     {
@@ -145,19 +153,22 @@ static errno_t compute_function()
                 sem =
                     ImageStreamIO_getsemwaitindex(&data.image[ID], semdefault);
             }
-            long  NBtsamples     = 1024;
-            float samplestimeout = 1.0;
+            long  NBtsamples     = 10000;
+            float samplestimeout = pinfotdelay;
             TUI_printfw(
-                "Listening on semaphore %d, waiting for %ld frames or %.3f "
-                "sec\n",
+                "Listening on semaphore %d, collecting %ld samples, updating "
+                "every %.3f sec\n",
                 sem,
                 NBtsamples,
                 samplestimeout);
+            TUI_printfw("%d  Press SPACE to reset buffer\n");
+
             info_image_streamtiming_stats(ID,
                                           sem,
                                           NBtsamples,
                                           samplestimeout,
-                                          21);
+                                          timingbuffinit);
+            timingbuffinit = 0;
         }
         else
         {
@@ -792,134 +803,3 @@ errno_t printstatus(imageID ID)
 
     return RETURN_SUCCESS;
 }
-
-
-/*
-errno_t info_image_monitor(const char *ID_name, float frequ)
-{
-    imageID ID;
-    int  sem;
-    int  MonMode = 0;
-
-
-    ID = image_ID(ID_name);
-    if (ID == -1)
-    {
-        printf("Image %s not found in memory\n\n", ID_name);
-        fflush(stdout);
-
-        return RETURN_SUCCESS;
-    }
-
-    int loopOK = 1;
-    int freeze = 0;
-
-    long NBtsamples = 1024;
-
-
-    DEBUG_TRACEPOINT("start display loop %d", loopOK);
-
-    while (loopOK == 1)
-    {
-        DEBUG_TRACEPOINT("sleep");
-        usleep((long) (1000000.0 / frequ));
-
-        DEBUG_TRACEPOINT("Get key pressed");
-        int ch = getch();
-        DEBUG_TRACEPOINT("Got key pressed : %d", ch);
-
-        DEBUG_TRACEPOINT("Get terminal size");
-        TUI_get_terminal_size(&wrow, &wcol);
-
-
-        DEBUG_TRACEPOINT("process input key");
-        switch (ch)
-        {
-        case 'x': // Exit control screen
-            loopOK = 0;
-            break;
-        case 's':
-            MonMode = 0; // summary
-            break;
-
-        case '0':
-            MonMode = 1; // Sem timing
-            sem     = 0;
-            break;
-
-        case '1':
-            MonMode = 1; // Sem timing
-            sem     = 1;
-            break;
-
-        case '2':
-            MonMode = 1; // Sem timing
-            sem     = 2;
-            break;
-
-        case '+':
-            if (MonMode == 1)
-            {
-                NBtsamples *= 2;
-            }
-            break;
-
-        case '-':
-            if (MonMode == 1)
-            {
-                NBtsamples /= 2;
-            }
-            break;
-
-        }
-
-
-
-        if (freeze == 0)
-        {
-            erase();
-
-            int  stringmaxlen = 500;
-            char monstring[stringmaxlen];
-
-            screenprint_setbold();
-
-            if (snprintf(monstring,
-                         stringmaxlen,
-                         "[%d x %d] [PID %d] STREAM MONITOR: PRESS (x) TO "
-                         "STOP, (h) FOR HELP [ %.2f Hz]",
-                         wrow,
-                         wcol,
-                         (int) getpid(),
-                         frequ
-                        ) < 0)
-            {
-                PRINT_ERROR("snprintf error");
-            }
-            TUI_print_header(monstring, '-');
-            screenprint_unsetbold();
-            TUI_newline();
-
-
-            if (MonMode == 0)
-            {
-                //clear();
-                printstatus(ID);
-            }
-
-            if (MonMode == 1)
-            {
-                //clear();
-
-                info_image_streamtiming_stats(ID,
-                                              sem,
-                                              NBtsamples,
-                                              1.0,
-                                              10);
-            }
-            refresh();
-        }
-    }
-    return RETURN_SUCCESS;
-}
-*/

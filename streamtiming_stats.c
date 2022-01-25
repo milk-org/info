@@ -18,21 +18,23 @@
 errno_t info_image_streamtiming_stats_disp(double *tdiffvarray,
                                            long    NBsamples,
                                            double  tdiffvmax,
-                                           long    tdiffcntmax,
-                                           long    NBpercbin);
+                                           long    tdiffcntmax);
 
 //
 //
-errno_t info_image_streamtiming_stats(imageID ID,
-                                      int     sem,
-                                      long    NBsamplesmax,
-                                      float   samplestimeout,
-                                      long    NBpercbin)
+errno_t info_image_streamtiming_stats(
+    imageID ID, int sem, long NBsamplesmax, float samplestimeout, int buffinit)
 {
     long cnt;
 
-    double *tdiffvarray;
-    tdiffvarray = (double *) malloc(sizeof(double) * NBsamplesmax);
+    static int     initflag = 0;
+    static double *tdiffvarray;
+
+    if (initflag == 0)
+    {
+        initflag    = 1;
+        tdiffvarray = (double *) malloc(sizeof(double) * NBsamplesmax);
+    }
 
     // warmup
     for (cnt = 0; cnt < SEMAPHORE_MAXVAL; cnt++)
@@ -57,8 +59,18 @@ errno_t info_image_streamtiming_stats(imageID ID,
     double tdiffvmax   = 0.0;
     long   tdiffcntmax = 0;
 
-    int  loopOK   = 1;
-    long framecnt = 0;
+    int loopOK = 1;
+
+    static long framecnt     = 0;
+    static long framecntbuff = 0;
+    static long NBsamples    = 0;
+
+    if (buffinit == 1)
+    {
+        framecnt     = 0;
+        framecntbuff = 0;
+    }
+
     while (loopOK == 1)
     {
         //for (long framecnt = 0; framecnt < NBsamplesmax; framecnt++)
@@ -76,9 +88,14 @@ errno_t info_image_streamtiming_stats(imageID ID,
             tdiffcntmax = framecnt;
         }
         framecnt++;
-        if (framecnt == NBsamplesmax)
+        framecntbuff++;
+        if (framecntbuff > NBsamplesmax)
         {
-            loopOK = 0;
+            framecntbuff = NBsamplesmax;
+        }
+        if (framecnt >= NBsamplesmax)
+        {
+            framecnt = 0;
         }
 
         tdiff              = info_time_diff(tstart, t1);
@@ -88,16 +105,14 @@ errno_t info_image_streamtiming_stats(imageID ID,
             loopOK = 0;
         }
     }
-    long cntdiff   = data.image[ID].md[0].cnt0 - cnt0 - 1;
-    long NBsamples = framecnt;
+    long cntdiff = data.image[ID].md[0].cnt0 - cnt0 - 1;
 
     info_image_streamtiming_stats_disp(tdiffvarray,
-                                       NBsamples,
+                                       framecntbuff,
                                        tdiffvmax,
-                                       tdiffcntmax,
-                                       NBpercbin);
+                                       tdiffcntmax);
 
-    free(tdiffvarray);
+    //    free(tdiffvarray);
 
     return RETURN_SUCCESS;
 }
@@ -108,99 +123,54 @@ errno_t info_image_streamtiming_stats(imageID ID,
 errno_t info_image_streamtiming_stats_disp(double *tdiffvarray,
                                            long    NBsamples,
                                            double  tdiffvmax,
-                                           long    tdiffcntmax,
-                                           long    NBpercbin)
+                                           long    tdiffcntmax)
 {
     float RMSval = 0.0;
     float AVEval = 0.0;
 
-    int percMedianIndex;
+    static int percMedianIndex;
 
-    float *percarray;
-    long  *percNarray;
+    static int    initflag = 0;
+    static float *percarray;
+    static long  *percNarray;
+    static int    NBpercbin;
 
-    // printw("ALLOCATE arrays\n");
-    percarray  = (float *) malloc(sizeof(float) * NBpercbin);
-    percNarray = (long *) malloc(sizeof(long) * NBpercbin);
-
-    long perccnt = 0;
-
-    float p;
-    long  N;
-
-    for (N = 1; N < 5; N++)
+    if (initflag == 0)
     {
-        if (N < NBsamples)
-        {
-            percNarray[perccnt] = N;
-            percarray[perccnt]  = 1.0 * N / NBsamples;
-            perccnt++;
-        }
+        initflag = 1;
+
+        // printw("ALLOCATE arrays\n");
+        NBpercbin  = 17;
+        percarray  = (float *) malloc(sizeof(float) * NBpercbin);
+        percNarray = (long *) malloc(sizeof(long) * NBpercbin);
+
+        percarray[0]  = 0.001;
+        percarray[1]  = 0.01;
+        percarray[2]  = 0.02;
+        percarray[3]  = 0.05;
+        percarray[4]  = 0.10;
+        percarray[5]  = 0.20;
+        percarray[6]  = 0.30;
+        percarray[7]  = 0.40;
+        percarray[8]  = 0.50;
+        percarray[9]  = 0.60;
+        percarray[10] = 0.70;
+        percarray[11] = 0.80;
+        percarray[12] = 0.90;
+        percarray[13] = 0.95;
+        percarray[14] = 0.98;
+        percarray[15] = 0.99;
+        percarray[16] = 0.999;
+
+        percMedianIndex = 8;
     }
 
-    for (p = 0.0001; p < 0.1; p *= 10.0)
+
+
+    for (int pc = 0; pc < NBpercbin; pc++)
     {
-        N = (long) (p * NBsamples);
-        if ((N > percNarray[perccnt - 1]) && (perccnt < NBpercbin - 1))
-        {
-            percNarray[perccnt] = N;
-            percarray[perccnt]  = 1.0 * N / NBsamples;
-            perccnt++;
-        }
+        percNarray[pc] = (long) (percarray[pc] * NBsamples);
     }
-
-    for (p = 0.1; p < 0.41; p += 0.1)
-    {
-        N = (long) (p * NBsamples);
-        if ((N > percNarray[perccnt - 1]) && (perccnt < NBpercbin - 1))
-        {
-            percNarray[perccnt] = N;
-            percarray[perccnt]  = 1.0 * N / NBsamples;
-            perccnt++;
-        }
-    }
-
-    p                   = 0.5;
-    N                   = (long) (p * NBsamples);
-    percNarray[perccnt] = N;
-    percarray[perccnt]  = 1.0 * N / NBsamples;
-    percMedianIndex     = perccnt;
-    perccnt++;
-
-    for (p = 0.6; p < 0.91; p += 0.1)
-    {
-        N = (long) (p * NBsamples);
-        if ((N > percNarray[perccnt - 1]) && (perccnt < NBpercbin - 1))
-        {
-            percNarray[perccnt] = N;
-            percarray[perccnt]  = 1.0 * N / NBsamples;
-            perccnt++;
-        }
-    }
-
-    for (p = 0.9; p < 0.999; p = p + 0.5 * (1.0 - p))
-    {
-        N = (long) (p * NBsamples);
-        if ((N > percNarray[perccnt - 1]) && (perccnt < NBpercbin - 1))
-        {
-            percNarray[perccnt] = N;
-            percarray[perccnt]  = 1.0 * N / NBsamples;
-            perccnt++;
-        }
-    }
-
-    for (long N1 = 5; N1 > 0; N1--)
-    {
-        N = NBsamples - N1;
-        if ((N > percNarray[perccnt - 1]) && (perccnt < NBpercbin - 1) &&
-            (N > 0))
-        {
-            percNarray[perccnt] = N;
-            percarray[perccnt]  = 1.0 * N / NBsamples;
-            perccnt++;
-        }
-    }
-
 
 
 
@@ -217,10 +187,7 @@ errno_t info_image_streamtiming_stats_disp(double *tdiffvarray,
     AVEval /= NBsamples;
     RMSval = sqrt(RMSval - AVEval * AVEval);
 
-    printw("\n NBsamples = %ld  (cntdiff = %ld)     NBpercbin = %ld\n\n",
-           NBsamples,
-           tdiffcntmax,
-           NBpercbin);
+    printw("\n NBsamples = %ld \n\n", NBsamples);
 
 
 
@@ -231,7 +198,7 @@ errno_t info_image_streamtiming_stats_disp(double *tdiffvarray,
         {
             attron(A_BOLD);
             printw(
-                "%2d/%2d  %6.3f% \%  %6.3f% \%  [%10ld] [%10ld]    %10.3f us\n",
+                "%2d/%2d  %6.3f% \%  %6.3f% \%  [%6ld] [%6ld]    %10.3f us\n",
                 percbin,
                 NBpercbin,
                 100.0 * percarray[percbin],
@@ -260,7 +227,7 @@ errno_t info_image_streamtiming_stats_disp(double *tdiffvarray,
             }
 
             printw(
-                "%2d/%2d  %6.3f% \%  %6.3f% \%  [%10ld] [%10ld]    %10.3f us   "
+                "%2d/%2d  %6.3f% \%  %6.3f% \%  [%6ld] [%6ld]    %10.3f us   "
                 " %+10.3f us\n",
                 percbin,
                 NBpercbin,
@@ -286,8 +253,8 @@ errno_t info_image_streamtiming_stats_disp(double *tdiffvarray,
            tdiffcntmax);
 
 
-    free(percarray);
-    free(percNarray);
+    //free(percarray);
+    //free(percNarray);
 
     return RETURN_SUCCESS;
 }
