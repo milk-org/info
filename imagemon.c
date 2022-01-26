@@ -113,79 +113,88 @@ static errno_t compute_function()
 
     INSERT_STD_PROCINFO_COMPUTEFUNC_LOOPSTART
 
-    INSTERT_TUI_KEYCONTROLS
-
-
-    if (TUIinputkch == ' ')
     {
-        TUI_printfw("BUFFER INIT\n");
-        // flush timing buffer
-        timingbuffinit = 1;
-    }
 
-    if ((dispcnt == 0) && (TUIpause == 0))
-    {
-        erase();
-
-        INSERT_TUI_SCREEN_MENU
-        TUI_newline();
+        INSTERT_TUI_KEYCONTROLS
 
 
-        //TUI_printfw("Display frequency = %f Hz -> diplaycntinterval = %d\n", *updatefrequency, diplaycntinterval);
-        //TUI_printfw("[ %8ld ] input ch : %d %c\n", processinfo->loopcnt, (int) TUIinputkch, TUIinputkch);
-
-        if (TUIscreen == 1)
+        if (TUIinputkch == ' ')
         {
-            TUI_printfw("h / F2 / F3 : change screen\n");
-            TUI_printfw("x : exit\n");
+            TUI_printfw("BUFFER INIT\n");
+            // flush timing buffer
+            timingbuffinit = 1;
         }
 
-        if (TUIscreen == 2)
+        if ((dispcnt == 0) && (TUIpause == 0))
         {
-            printstatus(ID);
-        }
+            erase();
 
-        if (TUIscreen == 3)
-        {
-            if (sem == -1)
+            INSERT_TUI_SCREEN_MENU
+            TUI_newline();
+
+
+            //TUI_printfw("Display frequency = %f Hz -> diplaycntinterval = %d\n", *updatefrequency, diplaycntinterval);
+            //TUI_printfw("[ %8ld ] input ch : %d %c\n", processinfo->loopcnt, (int) TUIinputkch, TUIinputkch);
+
+            if (TUIscreen == 1)
             {
-                int semdefault = 0;
-                sem =
-                    ImageStreamIO_getsemwaitindex(&data.image[ID], semdefault);
+                TUI_printfw("h / F2 / F3 : change screen\n");
+                TUI_printfw("x : exit\n");
             }
-            long  NBtsamples     = 10000;
-            float samplestimeout = pinfotdelay;
-            TUI_printfw(
-                "Listening on semaphore %d, collecting %ld samples, updating "
-                "every %.3f sec\n",
-                sem,
-                NBtsamples,
-                samplestimeout);
-            TUI_printfw("Press SPACE to reset buffer\n");
 
-            info_image_streamtiming_stats(ID,
-                                          sem,
-                                          NBtsamples,
-                                          samplestimeout,
-                                          timingbuffinit);
-            timingbuffinit = 0;
+            if (TUIscreen == 2)
+            {
+                processinfo->triggermode = PROCESSINFO_TRIGGERMODE_DELAY;
+                printstatus(ID);
+            }
+
+            if (TUIscreen == 3)
+            {
+                processinfo->triggermode =
+                    PROCESSINFO_TRIGGERMODE_IMMEDIATE; // DIIIIIIRTY
+
+                if (sem == -1)
+                {
+                    int semdefault = 0;
+                    sem = ImageStreamIO_getsemwaitindex(&data.image[ID],
+                                                        semdefault);
+                }
+                long  NBtsamples     = 10000;
+                float samplestimeout = pinfotdelay;
+                TUI_printfw(
+                    "Listening on semaphore %d, collecting %ld samples, "
+                    "updating "
+                    "every %.3f sec\n",
+                    sem,
+                    NBtsamples,
+                    samplestimeout);
+                TUI_printfw("Press SPACE to reset buffer\n");
+
+                // Hack to avoid missing a large amount of frames while waiting for the processinfo trigger delay
+                info_image_streamtiming_stats(
+                    ID,
+                    sem,
+                    NBtsamples,
+                    processinfo->triggerdelay.tv_sec +
+                        1.0e-9 * processinfo->triggerdelay.tv_nsec,
+                    timingbuffinit);
+                timingbuffinit = 0;
+            }
+            else
+            {
+                sem = -1;
+            }
+
+            refresh();
         }
-        else
+
+        dispcnt++;
+
+        if (dispcnt > diplaycntinterval)
         {
-            sem = -1;
+            dispcnt = 0;
         }
-
-        refresh();
     }
-
-    dispcnt++;
-
-    if (dispcnt > diplaycntinterval)
-    {
-        dispcnt = 0;
-    }
-
-
 
     INSERT_STD_PROCINFO_COMPUTEFUNC_END
 
