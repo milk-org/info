@@ -43,7 +43,7 @@ errno_t info_image_streamtiming_stats(
     }
 
     // collect timing data
-    long cnt0 = data.image[ID].md[0].cnt0;
+    //long cnt0 = data.image[ID].md[0].cnt0;
 
     struct timespec tstart;
     struct timespec t0;
@@ -63,7 +63,7 @@ errno_t info_image_streamtiming_stats(
 
     static long framecnt     = 0;
     static long framecntbuff = 0;
-    static long NBsamples    = 0;
+    //static long NBsamples    = 0;
 
     if (buffinit == 1)
     {
@@ -105,7 +105,6 @@ errno_t info_image_streamtiming_stats(
             loopOK = 0;
         }
     }
-    long cntdiff = data.image[ID].md[0].cnt0 - cnt0 - 1;
 
     info_image_streamtiming_stats_disp(tdiffvarray,
                                        framecntbuff,
