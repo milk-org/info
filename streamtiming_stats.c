@@ -16,9 +16,9 @@
 // ==========================================
 
 errno_t info_image_streamtiming_stats_disp(double *tdiffvarray,
-                                           long    NBsamples,
-                                           double  tdiffvmax,
-                                           long    tdiffcntmax);
+        long    NBsamples,
+        double  tdiffvmax,
+        long    tdiffcntmax);
 
 //
 //
@@ -30,14 +30,14 @@ errno_t info_image_streamtiming_stats(
     static int     initflag = 0;
     static double *tdiffvarray;
 
-    if (initflag == 0)
+    if(initflag == 0)
     {
         initflag    = 1;
         tdiffvarray = (double *) malloc(sizeof(double) * NBsamplesmax);
     }
 
     // warmup
-    for (cnt = 0; cnt < SEMAPHORE_MAXVAL; cnt++)
+    for(cnt = 0; cnt < SEMAPHORE_MAXVAL; cnt++)
     {
         sem_wait(data.image[ID].semptr[sem]);
     }
@@ -65,13 +65,13 @@ errno_t info_image_streamtiming_stats(
     static long framecntbuff = 0;
     //static long NBsamples    = 0;
 
-    if (buffinit == 1)
+    if(buffinit == 1)
     {
         framecnt     = 0;
         framecntbuff = 0;
     }
 
-    while (loopOK == 1)
+    while(loopOK == 1)
     {
         //for (long framecnt = 0; framecnt < NBsamplesmax; framecnt++)
         sem_wait(data.image[ID].semptr[sem]);
@@ -82,25 +82,25 @@ errno_t info_image_streamtiming_stats(
         t0.tv_sec             = t1.tv_sec;
         t0.tv_nsec            = t1.tv_nsec;
 
-        if (tdiffv > tdiffvmax)
+        if(tdiffv > tdiffvmax)
         {
             tdiffvmax   = tdiffv;
             tdiffcntmax = framecnt;
         }
         framecnt++;
         framecntbuff++;
-        if (framecntbuff > NBsamplesmax)
+        if(framecntbuff > NBsamplesmax)
         {
             framecntbuff = NBsamplesmax;
         }
-        if (framecnt >= NBsamplesmax)
+        if(framecnt >= NBsamplesmax)
         {
             framecnt = 0;
         }
 
         tdiff              = info_time_diff(tstart, t1);
         double tdiffstartv = 1.0 * tdiff.tv_sec + 1.0e-9 * tdiff.tv_nsec;
-        if (tdiffstartv > samplestimeout)
+        if(tdiffstartv > samplestimeout)
         {
             loopOK = 0;
         }
@@ -120,9 +120,9 @@ errno_t info_image_streamtiming_stats(
 
 
 errno_t info_image_streamtiming_stats_disp(double *tdiffvarray,
-                                           long    NBsamples,
-                                           double  tdiffvmax,
-                                           long    tdiffcntmax)
+        long    NBsamples,
+        double  tdiffvmax,
+        long    tdiffcntmax)
 {
     float RMSval = 0.0;
     float AVEval = 0.0;
@@ -134,7 +134,7 @@ errno_t info_image_streamtiming_stats_disp(double *tdiffvarray,
     static long  *percNarray;
     static int    NBpercbin;
 
-    if (initflag == 0)
+    if(initflag == 0)
     {
         initflag = 1;
 
@@ -166,9 +166,9 @@ errno_t info_image_streamtiming_stats_disp(double *tdiffvarray,
 
 
 
-    for (int pc = 0; pc < NBpercbin; pc++)
+    for(int pc = 0; pc < NBpercbin; pc++)
     {
-        percNarray[pc] = (long) (percarray[pc] * NBsamples);
+        percNarray[pc] = (long)(percarray[pc] * NBsamples);
     }
 
 
@@ -177,7 +177,7 @@ errno_t info_image_streamtiming_stats_disp(double *tdiffvarray,
     quick_sort_double(tdiffvarray, NBsamples);
 
     long i;
-    for (i = 0; i < NBsamples; i++)
+    for(i = 0; i < NBsamples; i++)
     {
         AVEval += tdiffvarray[i];
         RMSval += tdiffvarray[i] * tdiffvarray[i];
@@ -191,9 +191,9 @@ errno_t info_image_streamtiming_stats_disp(double *tdiffvarray,
 
 
 
-    for (int percbin = 0; percbin < NBpercbin; percbin++)
+    for(int percbin = 0; percbin < NBpercbin; percbin++)
     {
-        if (percbin == percMedianIndex)
+        if(percbin == percMedianIndex)
         {
             attron(A_BOLD);
             printw(
@@ -209,18 +209,18 @@ errno_t info_image_streamtiming_stats_disp(double *tdiffvarray,
         }
         else
         {
-            if (tdiffvarray[percNarray[percbin]] >
-                1.2 * tdiffvarray[percNarray[percMedianIndex]])
+            if(tdiffvarray[percNarray[percbin]] >
+                    1.2 * tdiffvarray[percNarray[percMedianIndex]])
             {
                 attron(A_BOLD | COLOR_PAIR(4));
             }
-            if (tdiffvarray[percNarray[percbin]] >
-                1.5 * tdiffvarray[percNarray[percMedianIndex]])
+            if(tdiffvarray[percNarray[percbin]] >
+                    1.5 * tdiffvarray[percNarray[percMedianIndex]])
             {
                 attron(A_BOLD | COLOR_PAIR(5));
             }
-            if (tdiffvarray[percNarray[percbin]] >
-                1.99 * tdiffvarray[percNarray[percMedianIndex]])
+            if(tdiffvarray[percNarray[percbin]] >
+                    1.99 * tdiffvarray[percNarray[percMedianIndex]])
             {
                 attron(A_BOLD | COLOR_PAIR(6));
             }
