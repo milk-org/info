@@ -74,10 +74,10 @@ errno_t info_image_streamtiming_stats(
         sem_trywait(image->semptr[sem]);
     }
 
-    sem_timedwait(image->semptr[sem], timeout);
     clock_gettime(CLOCK_REALTIME, &tstart);
     t0 = tstart;
     t_timeout = t0; t_timeout.tv_sec += 2;
+    sem_timedwait(image->semptr[sem], &t_timeout);
 
     while(loopOK == 1)
     {
